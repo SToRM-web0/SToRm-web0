@@ -77,6 +77,7 @@
       --c-education: var(--accent);
       --c-work: var(--teal);
       --c-internship: var(--blue);
+      --violet: #7A4FB5;      /* 4th line colour, funds comparison chart */
       /* Shape & shadow */
       --r-s: 4px;
       --bad: #B3261E;          /* negative / weakening indicators */
@@ -119,7 +120,7 @@
       --line: #243652; --line-strong: #37506F;
       --grid: rgba(230, 236, 245, 0.045);
       --accent: #E0AE62; --accent-soft: #2E2617; --on-accent: #0B1524;
-      --teal: #4CC9B5; --blue: #7EA6EA; --focus: #7EA6EA;
+      --teal: #4CC9B5; --blue: #7EA6EA; --focus: #7EA6EA; --violet: #B79CE8;
       --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 32px -12px rgba(0, 0, 0, .55);
         --aurora: .3;
     }
@@ -582,7 +583,7 @@
     .legend-inline { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin-bottom: .4rem; font-size: .82rem; color: var(--muted); }
     .legend-inline span { display: inline-flex; align-items: center; gap: .4rem; color: var(--muted); }
     .legend-inline i { width: 18px; height: 3px; border-radius: 2px; background: currentColor; }
-    .s0 { color: var(--muted); } .s1 { color: var(--blue); } .s2 { color: var(--accent); }
+    .s0 { color: var(--muted); } .s1 { color: var(--blue); } .s2 { color: var(--accent); } .s3 { color: var(--violet); }
     svg.line { display: block; width: 100%; height: auto; }
     .axis-text { fill: var(--muted); font: 11px var(--font-sans); }
     .grid-line { stroke: var(--line); stroke-width: 1; }
@@ -601,6 +602,21 @@
     .hbar[aria-pressed="true"] .track { background: var(--bg); }
     .hbar .fill { display: block; height: 100%; width: var(--w); background: var(--accent); border-radius: 6px; }
     .hbars--region .fill { background: var(--teal); }
+    .hbar.is-static { cursor: default; }
+    .hbar.is-static:hover { background: transparent; }
+    .pill.review { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+    .kpis--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 560px) { .kpis--2 { grid-template-columns: minmax(0, 1fr); } }
+
+    /* --- data cleaning case study: raw/clean records table --- */
+    table.data { width: 100%; min-width: 760px; border-collapse: collapse; font-size: .87rem; }
+    table.data th, table.data td { padding: .5rem .65rem; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+    table.data thead th { background: var(--surface-2); font-weight: 600; font-size: .8rem; }
+    table.data td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    table.data tr.is-removed td { opacity: .5; text-decoration: line-through; }
+    table.data tr.is-flagged td { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+    .cell-issue { background: color-mix(in srgb, var(--bad) 15%, transparent); border-radius: 3px; cursor: help; text-decoration: underline dotted; text-decoration-color: var(--bad); text-underline-offset: 2px; }
+
     .hbar .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
     @media (max-width: 480px) { .hbar { grid-template-columns: 5rem minmax(0, 1fr) 4.9rem; gap: .4rem; font-size: .85rem; } }
 
@@ -609,6 +625,12 @@
     .findings ul { display: grid; gap: .6rem; }
     .findings li { position: relative; padding-left: 1.1rem; font-size: .95rem; }
     .findings li::before { content: ""; position: absolute; left: 0; top: .72em; width: 6px; height: 2px; background: var(--accent); }
+    .fund-toggles { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    .fund-toggles .chip-btn { border-left: 4px solid var(--fc, var(--line-strong)); }
+    .fund-legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin-bottom: .5rem; font-size: .82rem; color: var(--muted); }
+    .fund-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+    .fund-legend i { width: 18px; height: 3px; border-radius: 2px; background: var(--fc); }
+    .ratios td.hl { color: var(--ink); font-weight: 600; }
 
     /* --- ratio analyzer --- */
     .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-s); }
@@ -1069,6 +1091,20 @@
         ]
       },
       {
+        id: 'cleaning', demo: 'cleaning', badge: 'Simulated data',
+        title: 'Data Cleaning and Analysis Case Study',
+        summary: 'Takes a messy, realistic order dataset and walks through the specific problems in it, the rules used to fix each one, and how much the clean-up changed the final numbers.',
+        tags: ['Data cleaning', 'Data quality', 'Excel and Power BI method'],
+        problem: 'Raw exported data is rarely ready to analyse: duplicate records, inconsistent spelling, mixed date formats and missing or clearly wrong values all distort totals if they are not caught first.',
+        dataNote: 'A simulated set of 100 order records, deliberately written to include the kinds of problems real exports have: duplicates, blanks, mismatched spelling, four different date formats, and a couple of outlier prices.',
+        approach: [
+          'Wrote a small sample of rows by hand so each issue type is easy to see, then generated the rest with the same issues at realistic rates.',
+          'Detected each issue type separately: duplicate IDs, missing values, spelling and case variants, mixed date formats, and outlier prices.',
+          'Applied a clear rule to each issue, and flagged outliers for review rather than deleting or guessing a "fixed" value.',
+          'Compared the naive total against the cleaned total to show, in rupees, why the clean-up mattered.'
+        ]
+      },
+      {
         id: 'ratios', demo: 'ratios', badge: 'Hypothetical figures',
         title: 'Financial Ratio Analyzer',
         summary: 'Enter five years of financial figures and get eight standard ratios, trend markers and a plain-language reading of profitability, leverage and liquidity.',
@@ -1080,6 +1116,34 @@
           'Built an editable five-year input table.',
           'Calculated each ratio with guarded formulas and added trend markers and sparklines.',
           'Wrote rule-based commentary that reads the latest ratios against common rules of thumb.'
+        ]
+      },
+      {
+        id: 'network', demo: 'network', badge: 'Simulated data',
+        title: 'IT Support and Network Uptime Dashboard',
+        summary: 'A dashboard of support tickets, resolution time, uptime and repeat issues, built on the kind of tier-1 network support work described in my customer service role.',
+        tags: ['Ticket analysis', 'Uptime monitoring', 'Root-cause thinking'],
+        problem: 'A small ISP or cable operator needs to see which issue types take the most staff time, whether service stays reliably available, and which problems keep recurring rather than getting fixed for good.',
+        dataNote: 'Two years of simulated ticket and uptime data, modelled on the issue types a tier-1 network support role handles: connectivity, router configuration, LAN setup, outages and billing. Not real company data.',
+        approach: [
+          'Simulated monthly tickets by issue type, with seasonal variation and two outage spikes.',
+          'Modelled resolution time and a repeat-issue rate for each issue type.',
+          'Built filters by time period, with tickets, resolution time, uptime and repeat-rate KPIs.',
+          'Wrote findings and recommendations from the calculated figures, including where uptime dipped.'
+        ]
+      },
+      {
+        id: 'funds', demo: 'funds', badge: 'Simulated data, not investment advice',
+        title: 'Mutual Fund Comparison Tool',
+        summary: 'Compares four hypothetical funds on return, volatility, risk-adjusted return (Sharpe ratio) and worst-case drawdown, not just headline growth.',
+        tags: ['Risk-adjusted return', 'Volatility and drawdown', 'Portfolio comparison'],
+        problem: 'Comparing funds on returns alone hides risk. An investor also needs to see volatility, risk-adjusted return and how far a fund could fall before deciding where to put money.',
+        dataNote: 'Four hypothetical funds with simulated 3-year monthly returns, built with different risk and return profiles to show the method. This is a demonstration, not a real fund comparison or investment advice.',
+        approach: [
+          'Simulated 36 months of returns per fund from a mean and volatility assumption.',
+          'Calculated CAGR, annualised volatility, Sharpe ratio and maximum drawdown for each fund.',
+          'Built a growth-of-₹10,000 chart so funds can be compared visually, with funds selectable.',
+          'Wrote findings on the return-risk trade-off and a recommendation by risk appetite, with a clear disclaimer.'
         ]
       },
       {
@@ -1363,6 +1427,7 @@
      ==================================================================== */
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const sumBy = (arr, k) => arr.reduce((a, r) => a + r[k], 0);
+  const sumF = (arr, fn) => arr.reduce((a, r) => a + fn(r), 0);
   const fmtPct = (x, d = 1) => (x * 100).toFixed(d) + '%';
   /** Sales are stored in ₹ lakh; this shows them in ₹ crore (1 crore = 100 lakh) */
   const fmtCr = lakh => '₹' + (lakh / 100).toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' Cr';
@@ -1704,7 +1769,589 @@
     );
   }
 
-  const DEMOS = { sales: mountSalesDashboard, ratios: mountRatioAnalyzer, excel: mountExcelProject };
+
+  /* ---------- Project: IT Support and Network Uptime Dashboard ---------- */
+  const NETWORK_MODEL = {
+    seed: 340125,
+    years: [2024, 2025],
+    types: ['Connectivity', 'Router configuration', 'LAN setup', 'Service outage', 'Billing query'],
+    typeShare:    { Connectivity: 0.34, 'Router configuration': 0.22, 'LAN setup': 0.16, 'Service outage': 0.08, 'Billing query': 0.20 },
+    typeResHours: { Connectivity: 2.2,  'Router configuration': 3.1,  'LAN setup': 2.6,  'Service outage': 5.4,  'Billing query': 1.1 },
+    typeRepeat:   { Connectivity: 0.09, 'Router configuration': 0.14, 'LAN setup': 0.07, 'Service outage': 0.22, 'Billing query': 0.04 },
+    baseTickets: 150, growth: 1.012,
+    season: [1.05, 1.0, 0.95, 0.95, 0.95, 1.0, 1.05, 1.05, 1.0, 0.95, 1.1, 1.15],
+    outageSpikes: { 13: 1.7, 20: 1.9 }   // month index -> multiplier on Service outage tickets that month
+  };
+
+  /** Builds ticket-level rows (one per month per issue type) and a monthly summary */
+  function buildNetworkData() {
+    const M = NETWORK_MODEL, rnd = mulberry32(M.seed), rows = [], monthly = [];
+    let i = 0;
+    M.years.forEach(y => { for (let m = 0; m < 12; m++) {
+      const spike = M.outageSpikes[i] || 1;
+      const total = M.baseTickets * Math.pow(M.growth, i) * M.season[m] * (0.94 + rnd() * 0.12);
+      let monthTickets = 0, resWeighted = 0, repWeighted = 0;
+      M.types.forEach(t => {
+        const mult = t === 'Service outage' ? spike : 1;
+        const tickets = Math.max(1, Math.round(total * M.typeShare[t] * mult * (0.9 + rnd() * 0.2)));
+        const resHours = M.typeResHours[t] * (0.85 + rnd() * 0.3) * (t === 'Service outage' ? spike * 0.6 + 0.4 : 1);
+        const repeatRate = Math.min(0.4, M.typeRepeat[t] * (0.8 + rnd() * 0.4));
+        rows.push({ i, y, m, t, tickets, resHours, repeatRate });
+        monthTickets += tickets; resWeighted += tickets * resHours; repWeighted += tickets * repeatRate;
+      });
+      const uptime = Math.max(97.6, 99.95 - (spike - 1) * 1.15 - rnd() * 0.05);
+      monthly.push({ i, y, m, tickets: monthTickets, avgRes: resWeighted / monthTickets, repeatRate: repWeighted / monthTickets, uptime });
+      i++;
+    }});
+    return { rows, monthly };
+  }
+
+  /** Findings computed from the WHOLE dataset, independent of the visitor's filters */
+  function networkFindings(rows, monthly) {
+    const M = NETWORK_MODEL;
+    const byType = M.types.map(t => {
+      const tr = rows.filter(r => r.t === t), tickets = sumBy(tr, 'tickets');
+      return { t, tickets, share: tickets / sumBy(monthly, 'tickets'), avgRes: sumF(tr, r => r.tickets * r.resHours) / tickets, repeatRate: sumF(tr, r => r.tickets * r.repeatRate) / tickets };
+    });
+    const topVol = [...byType].sort((a, b) => b.tickets - a.tickets)[0];
+    const slowest = [...byType].sort((a, b) => b.avgRes - a.avgRes)[0];
+    const mostRepeat = [...byType].sort((a, b) => b.repeatRate - a.repeatRate)[0];
+    const y1 = monthly.filter(mo => mo.y === M.years[0]), y2 = monthly.filter(mo => mo.y === M.years[1]);
+    const growth = sumBy(y2, 'tickets') / sumBy(y1, 'tickets') - 1;
+    const avgUptime = sumBy(monthly, 'uptime') / monthly.length;
+    const worstMonth = [...monthly].sort((a, b) => a.uptime - b.uptime)[0];
+    const label = mo => MONTHS[mo.m] + ' ' + mo.y;
+    return {
+      findings: [
+        `Tickets rose ${fmtPct(growth)} from ${M.years[0]} to ${M.years[1]}, roughly tracking growth in the customer base.`,
+        `${topVol.t} is the largest category at ${fmtPct(topVol.share, 0)} of all tickets, while ${slowest.t} takes the longest to resolve, averaging ${slowest.avgRes.toFixed(1)} hours.`,
+        `${mostRepeat.t} has the highest repeat-issue rate at ${fmtPct(mostRepeat.repeatRate)}, meaning the same customer often needs a second visit.`,
+        `Average uptime across both years is ${avgUptime.toFixed(2)}%. The lowest point was ${label(worstMonth)}, at ${worstMonth.uptime.toFixed(2)}%, matching a spike in outage tickets.`
+      ],
+      recs: [
+        `Build a step-by-step runbook for ${slowest.t.toLowerCase()}, since it takes the longest per ticket and cutting that time would free up the most staff hours.`,
+        `Investigate the root cause behind ${mostRepeat.t.toLowerCase()} repeat visits (${fmtPct(mostRepeat.repeatRate)} repeat rate) rather than only fixing the symptom each time.`,
+        `Add proactive monitoring or alerts ahead of peak months, since uptime dips have lined up with outage-driven ticket spikes such as ${label(worstMonth)}.`
+      ]
+    };
+  }
+
+  function mountNetworkDashboard(host) {
+    const { rows, monthly } = buildNetworkData();
+    const M = NETWORK_MODEL;
+    const st = { period: '12', type: 'all' };
+
+    const periodSel = el('select', { onchange: e => { st.period = e.target.value; render(); } },
+      el('option', { value: '6' }, 'Last 6 months'), el('option', { value: '12', selected: true }, 'Last 12 months'), el('option', { value: '24' }, 'Last 24 months'));
+    const controls = el('div', { class: 'dash-controls' }, el('label', { class: 'field' }, 'Period', periodSel),
+      el('button', { type: 'button', class: 'chip-btn', onclick: () => { st.period = '12'; st.type = 'all'; periodSel.value = '12'; render(); } }, 'Reset filters'));
+
+    const kpis = el('div', { class: 'kpis' });
+    const plot = el('div', { role: 'img' });
+    const plotNote = el('p', { class: 'plot-note' });
+    const chartTitle = el('h4', {}, 'Ticket volume by month');
+    const typeBars = el('div', { class: 'hbars' });
+    const repeatBars = el('div', { class: 'hbars' });
+    const chartPanel = el('div', { class: 'panel' }, chartTitle, plot, plotNote);
+    const side = el('div', { class: 'dash-side' },
+      el('div', { class: 'panel' }, el('h4', {}, 'Tickets by issue type'), el('p', { class: 'panel-hint' }, 'Select a type to filter. Sub-text shows average resolution time.'), typeBars),
+      el('div', { class: 'panel' }, el('h4', {}, 'Repeat-issue rate by type'), el('p', { class: 'panel-hint' }, 'Share of tickets on the same issue for the same customer.'), repeatBars));
+
+    const fx = networkFindings(rows, monthly);
+    const findings = el('div', { class: 'findings' },
+      el('div', {}, el('h4', {}, 'What the data shows'), el('ul', {}, fx.findings.map(t => el('li', {}, t)))),
+      el('div', {}, el('h4', {}, 'What I would recommend'), el('ul', {}, fx.recs.map(t => el('li', {}, t)))));
+
+    host.append(controls, kpis, el('div', { class: 'dash-grid' }, chartPanel, side), findings,
+      el('p', { class: 'demo-note' }, 'All figures are simulated. Findings above describe the full 24-month dataset; the period and type filters change the KPIs and chart.'));
+
+    const kpi = (label, value, sub, tone) => el('div', { class: 'kpi' },
+      el('div', { class: 'kpi-label' }, label), el('div', { class: 'kpi-value' }, value), el('div', { class: 'kpi-sub' + (tone ? ' ' + tone : '') }, sub));
+    const bar = (name, value, max, sub, pressed, onClick, staticBar) => el(staticBar ? 'div' : 'button', {
+      type: staticBar ? null : 'button', class: 'hbar' + (staticBar ? ' is-static' : ''), 'aria-pressed': String(!!pressed), onclick: onClick
+    }, el('span', { class: 'lab' }, name, sub ? el('small', {}, sub) : null),
+       el('span', { class: 'track' }, el('span', { class: 'fill', style: { '--w': (max ? (value / max) * 100 : 0).toFixed(1) + '%' } })),
+       el('span', { class: 'val' }, typeof value === 'number' && value < 1 ? fmtPct(value) : value.toLocaleString('en-IN')));
+
+    function renderChart(monthsInScope) {
+      const n = monthsInScope.length;
+      const W = Math.max(280, Math.round(plot.clientWidth || 600)), H = 220, L = 44, R = 10, T = 12, B = 26;
+      const vals = monthsInScope.map(m => m.tickets);
+      const top = Math.ceil(Math.max(...vals) * 1.15 / 50) * 50;
+      const x = i => L + (W - L - R) * (n === 1 ? 0 : i / (n - 1)), y = v => T + (H - T - B) * (1 - v / top);
+      let g = '';
+      for (let i = 0; i <= 4; i++) { const v = top * i / 4; g += `<line class="grid-line" x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="axis-text" x="${L - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${Math.round(v)}</text>`; }
+      const step = n > 12 ? 3 : n > 6 ? 2 : 1;
+      monthsInScope.forEach((m, i) => { if (i % step === 0) g += `<text class="axis-text" x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="middle">${MONTHS[m.m]} '${String(m.y).slice(2)}</text>`; });
+      const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+      const area = `<polygon class="area s2" points="${pts.join(' ')} ${x(n - 1).toFixed(1)},${y(0).toFixed(1)} ${x(0).toFixed(1)},${y(0).toFixed(1)}"/>`;
+      const dots = vals.map((v, i) => `<circle class="dot s2" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="5"><title>${MONTHS[monthsInScope[i].m]} ${monthsInScope[i].y}: ${v} tickets</title></circle>`).join('');
+      plot.innerHTML = `<svg class="line" viewBox="0 0 ${W} ${H}" aria-hidden="true">${g}<polyline class="series s2" points="${pts.join(' ')}"/>${area}${dots}</svg>`;
+      const peakIdx = vals.indexOf(Math.max(...vals));
+      plotNote.textContent = `Peak: ${MONTHS[monthsInScope[peakIdx].m]} ${monthsInScope[peakIdx].y} at ${vals[peakIdx]} tickets.`;
+      plot.setAttribute('aria-label', `Ticket volume line chart. ${plotNote.textContent}`);
+    }
+
+    let lastMonthsInScope = null;
+    function render() {
+      const nPeriod = Number(st.period);
+      const monthsInScope = monthly.slice(monthly.length - nPeriod);
+      lastMonthsInScope = monthsInScope;
+      const idxSet = new Set(monthsInScope.map(m => m.i));
+      const scopedRows = rows.filter(r => idxSet.has(r.i) && (st.type === 'all' || r.t === st.type));
+      const ticketsResolved = sumBy(scopedRows, 'tickets');
+      const avgRes = sumF(scopedRows, r => r.tickets * r.resHours) / ticketsResolved;
+      const repeatRate = sumF(scopedRows, r => r.tickets * r.repeatRate) / ticketsResolved;
+      const uptimeAvg = sumBy(monthsInScope, 'uptime') / monthsInScope.length;
+
+      const havePrev = monthly.length - 2 * nPeriod >= 0;
+      let growthText = 'no prior period to compare';
+      if (havePrev) {
+        const prevMonths = monthly.slice(monthly.length - 2 * nPeriod, monthly.length - nPeriod);
+        const prevIdx = new Set(prevMonths.map(m => m.i));
+        const prevTickets = sumBy(rows.filter(r => prevIdx.has(r.i) && (st.type === 'all' || r.t === st.type)), 'tickets');
+        const g = ticketsResolved / prevTickets - 1;
+        growthText = `${g >= 0 ? '+' : ''}${fmtPct(g)} vs prior period`;
+      }
+      const periodLabel = `Last ${nPeriod} months` + (st.type === 'all' ? '' : ` · ${st.type}`);
+
+      kpis.replaceChildren(
+        kpi('Tickets resolved', ticketsResolved.toLocaleString('en-IN'), growthText),
+        kpi('Avg resolution time', avgRes.toFixed(1) + ' hrs', periodLabel),
+        kpi('Network uptime', uptimeAvg.toFixed(2) + '%', periodLabel, uptimeAvg >= 99.3 ? 'up' : 'down'),
+        kpi('Repeat-issue rate', fmtPct(repeatRate), periodLabel, repeatRate <= 0.12 ? 'up' : 'down')
+      );
+
+      const typeStats = M.types.map(t => {
+        const trAll = rows.filter(r => idxSet.has(r.i) && r.t === t);
+        const tickets = sumBy(trAll, 'tickets');
+        return { t, tickets, avgRes: sumF(trAll, r => r.tickets * r.resHours) / tickets, repeatRate: sumF(trAll, r => r.tickets * r.repeatRate) / tickets };
+      }).sort((a, b) => b.tickets - a.tickets);
+      const maxT = Math.max(...typeStats.map(x => x.tickets));
+      typeBars.replaceChildren(...typeStats.map(x => bar(x.t, x.tickets, maxT, x.avgRes.toFixed(1) + ' hrs avg', st.type === x.t,
+        () => { st.type = st.type === x.t ? 'all' : x.t; render(); }, false)));
+      const maxR = Math.max(...typeStats.map(x => x.repeatRate));
+      repeatBars.replaceChildren(...[...typeStats].sort((a, b) => b.repeatRate - a.repeatRate).map(x => bar(x.t, x.repeatRate, maxR, '', false, null, true)));
+
+      renderChart(monthsInScope);
+    }
+    render();
+    let lastW = plot.clientWidth;
+    new ResizeObserver(() => { if (Math.abs(plot.clientWidth - lastW) > 8 && lastMonthsInScope) { lastW = plot.clientWidth; renderChart(lastMonthsInScope); } }).observe(plot);
+  }
+
+  /* ---------- Project: Mutual Fund Comparison Tool ---------- */
+  const FUNDS_MODEL = {
+    seed: 771123, months: 36, riskFreeAnnual: 0.065,
+    funds: [
+      { name: 'Steady Bond Fund',    mean: 0.0058, vol: 0.010 },
+      { name: 'Balanced Equity Fund', mean: 0.0095, vol: 0.032 },
+      { name: 'Growth Equity Fund',   mean: 0.0120, vol: 0.055 },
+      { name: 'Sector IT Fund',       mean: 0.0145, vol: 0.085 }
+    ]
+  };
+  const FUND_COLORS = ['var(--blue)', 'var(--accent)', 'var(--teal)', 'var(--violet)'];
+
+  /** Builds a value series (₹10,000 start, then one point per month) for each fund */
+  function buildFundsData() {
+    const M = FUNDS_MODEL, rnd = mulberry32(M.seed);
+    return M.funds.map(f => {
+      const monthlyReturns = [], values = [10000];
+      for (let t = 0; t < M.months; t++) {
+        const z = (rnd() + rnd() + rnd() - 1.5) / 0.5;      // approx. standard normal (sum of 3 uniforms)
+        const ret = f.mean + f.vol * z;
+        monthlyReturns.push(ret);
+        values.push(values[values.length - 1] * (1 + ret));
+      }
+      return { ...f, monthlyReturns, values };
+    });
+  }
+
+  function fundMetrics(f) {
+    const n = f.monthlyReturns.length, years = n / 12;
+    const finalValue = f.values[f.values.length - 1];
+    const cagr = Math.pow(finalValue / 10000, 1 / years) - 1;
+    const mean = f.monthlyReturns.reduce((a, b) => a + b, 0) / n;
+    const variance = f.monthlyReturns.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1);
+    const vol = Math.sqrt(variance) * Math.sqrt(12);
+    const sharpe = vol ? (cagr - FUNDS_MODEL.riskFreeAnnual) / vol : null;
+    let peak = f.values[0], maxDD = 0;
+    f.values.forEach(v => { peak = Math.max(peak, v); maxDD = Math.min(maxDD, v / peak - 1); });
+    return { cagr, vol, sharpe, maxDD, finalValue };
+  }
+
+  function fundsFindings(funds, metrics) {
+    const withM = funds.map((f, i) => ({ f, m: metrics[i] }));
+    const bestCagr = [...withM].sort((a, b) => b.m.cagr - a.m.cagr)[0];
+    const bestSharpe = [...withM].sort((a, b) => b.m.sharpe - a.m.sharpe)[0];
+    const worstDD = [...withM].sort((a, b) => a.m.maxDD - b.m.maxDD)[0];
+    const lowestVol = [...withM].sort((a, b) => a.m.vol - b.m.vol)[0];
+    const lowestReturn = [...withM].sort((a, b) => a.m.cagr - b.m.cagr)[0];
+    const steadyLine = lowestVol.f === lowestReturn.f
+      ? `${lowestVol.f.name} was the steadiest, with annualised volatility of only ${fmtPct(lowestVol.m.vol)}, but also the lowest return of the four, illustrating the usual return-for-risk trade-off.`
+      : `${lowestVol.f.name} was the steadiest, with annualised volatility of only ${fmtPct(lowestVol.m.vol)}, and still returned ${fmtPct(lowestVol.m.cagr)} a year, ahead of ${lowestReturn.f.name} (${fmtPct(lowestReturn.m.cagr)}). A single 3-year simulated run does not always follow the textbook pattern of higher risk paying off with a higher return.`;
+    return {
+      findings: [
+        `${bestCagr.f.name} had the highest return over 3 years, growing at about ${fmtPct(bestCagr.m.cagr)} a year (₹10,000 → ₹${Math.round(bestCagr.m.finalValue).toLocaleString('en-IN')}).`,
+        `${bestSharpe.f.name} had the best risk-adjusted return (Sharpe ratio ${bestSharpe.m.sharpe.toFixed(2)}), meaning it delivered more return per unit of risk taken than the others.`,
+        `${worstDD.f.name} saw the deepest drawdown, falling ${fmtPct(Math.abs(worstDD.m.maxDD))} from its peak at the worst point.`,
+        steadyLine
+      ],
+      recs: [
+        `An investor who wants steady, low-swing returns would lean toward ${lowestVol.f.name}.`,
+        `An investor comfortable with some ups and downs, who wants the best return for the risk taken, would look at ${bestSharpe.f.name} first.`,
+        `An investor chasing the highest possible growth might consider ${bestCagr.f.name}, but should be ready for drawdowns similar to the ${fmtPct(Math.abs(worstDD.m.maxDD))} seen here.`
+      ]
+    };
+  }
+
+  function mountFundsComparison(host) {
+    const funds = buildFundsData();
+    const metricsAll = funds.map(fundMetrics);
+    const active = new Set(funds.map((_, i) => i));
+
+    const toggles = el('div', { class: 'fund-toggles' });
+    const legend = el('div', { class: 'fund-legend' });
+    const plot = el('div', { role: 'img' });
+    const plotNote = el('p', { class: 'plot-note' });
+    const tableHost = el('div', { class: 'table-wrap' });
+
+    const fx = fundsFindings(funds, metricsAll);
+    const findings = el('div', { class: 'findings' },
+      el('div', {}, el('h4', {}, 'What the data shows'), el('ul', {}, fx.findings.map(t => el('li', {}, t)))),
+      el('div', {}, el('h4', {}, 'By risk appetite'), el('ul', {}, fx.recs.map(t => el('li', {}, t)))));
+
+    host.append(
+      toggles,
+      el('div', { class: 'panel' }, el('h4', {}, 'Growth of ₹10,000'), legend, plot, plotNote),
+      tableHost, findings,
+      el('p', { class: 'demo-note' }, 'All four funds are simulated for this demonstration. This is not investment advice; a real decision should use a licensed adviser and audited fund data. An assumed risk-free rate of 6.5% a year is used for the Sharpe ratio.')
+    );
+
+    toggles.replaceChildren(...funds.map((f, i) => el('button', {
+      type: 'button', class: 'chip-btn', style: { '--fc': FUND_COLORS[i] }, 'aria-pressed': 'true',
+      onclick: e => {
+        if (active.has(i) && active.size === 1) return;            // keep at least one fund selected
+        active.has(i) ? active.delete(i) : active.add(i);
+        e.currentTarget.setAttribute('aria-pressed', String(active.has(i)));
+        render();
+      }
+    }, f.name)));
+
+    function renderChart() {
+      const n = FUNDS_MODEL.months + 1;
+      const W = Math.max(280, Math.round(plot.clientWidth || 600)), H = 240, L = 52, R = 10, T = 12, B = 26;
+      const shown = funds.filter((_, i) => active.has(i));
+      const allVals = shown.flatMap(f => f.values);
+      const top = Math.ceil(Math.max(...allVals) / 5000) * 5000;
+      const x = i => L + (W - L - R) * i / (n - 1), y = v => T + (H - T - B) * (1 - v / top);
+      let g = '';
+      for (let i = 0; i <= 4; i++) { const v = top * i / 4; g += `<line class="grid-line" x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="axis-text" x="${L - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">₹${Math.round(v / 1000)}k</text>`; }
+      const ticks = [0, 12, 24, 36];
+      ticks.forEach(t => g += `<text class="axis-text" x="${x(t).toFixed(1)}" y="${H - 8}" text-anchor="middle">${t === 0 ? 'Start' : 'Yr ' + t / 12}</text>`);
+      const body = funds.map((f, i) => {
+        if (!active.has(i)) return '';
+        const pts = f.values.map((v, j) => `${x(j).toFixed(1)},${y(v).toFixed(1)}`);
+        return `<polyline class="series" style="color:${FUND_COLORS[i]}" points="${pts.join(' ')}"/>`;
+      }).join('');
+      plot.innerHTML = `<svg class="line" viewBox="0 0 ${W} ${H}" aria-hidden="true">${g}${body}</svg>`;
+      const best = shown.reduce((a, f) => f.values[f.values.length - 1] > a.values[a.values.length - 1] ? f : a, shown[0]);
+      plotNote.textContent = `Among the funds shown, ${best.name} ended highest at ₹${Math.round(best.values[best.values.length - 1]).toLocaleString('en-IN')}.`;
+      plot.setAttribute('aria-label', `Growth of ten thousand rupees line chart. ${plotNote.textContent}`);
+    }
+
+    function render() {
+      legend.replaceChildren(...funds.map((f, i) => active.has(i) ? el('span', { style: { '--fc': FUND_COLORS[i] } }, el('i'), f.name) : null));
+      const rowsHtml = funds.map((f, i) => {
+        if (!active.has(i)) return null;
+        const m = metricsAll[i];
+        const bestSharpeIdx = [...active].sort((a, b) => metricsAll[b].sharpe - metricsAll[a].sharpe)[0];
+        return el('tr', {},
+          el('td', {}, f.name), el('td', {}, fmtPct(m.cagr)), el('td', {}, fmtPct(m.vol)),
+          el('td', { class: i === bestSharpeIdx ? 'hl' : null }, m.sharpe.toFixed(2) + (i === bestSharpeIdx ? ' (best)' : '')),
+          el('td', {}, fmtPct(m.maxDD)), el('td', {}, '₹' + Math.round(m.finalValue).toLocaleString('en-IN')));
+      }).filter(Boolean);
+      tableHost.replaceChildren(el('table', { class: 'ratios' },
+        el('thead', {}, el('tr', {}, ['Fund', 'CAGR', 'Volatility', 'Sharpe ratio', 'Max drawdown', 'Value of ₹10,000'].map(h => el('th', { scope: 'col' }, h)))),
+        el('tbody', {}, rowsHtml)));
+      renderChart();
+    }
+    render();
+    let lastW = plot.clientWidth;
+    new ResizeObserver(() => { if (Math.abs(plot.clientWidth - lastW) > 8) { lastW = plot.clientWidth; renderChart(); } }).observe(plot);
+  }
+
+
+  /* ---------- Project: Data Cleaning and Analysis Case Study ---------- */
+  const CLEAN_CITY_ALIASES = {
+    Bengaluru: ['Bengaluru', 'bengaluru', 'BENGALURU', 'Bangalore', ' Bengaluru '],
+    Mumbai:    ['Mumbai', 'mumbai', 'MUMBAI', 'Bombay', ' Mumbai'],
+    Delhi:     ['Delhi', 'delhi', 'DELHI', 'New Delhi'],
+    Chennai:   ['Chennai', 'chennai', 'CHENNAI'],
+    Pune:      ['Pune', 'pune', 'PUNE']
+  };
+  const CLEAN_CATEGORY_ALIASES = {
+    Electronics: ['Electronics', 'electronics', 'ELECTRONICS', 'Electronics '],
+    Apparel:     ['Apparel', 'apparel', 'APPAREL', 'Apparel '],
+    Home:        ['Home', 'home', 'HOME'],
+    Grocery:     ['Grocery', 'grocery', 'GROCERY'],
+    Beauty:      ['Beauty', 'beauty', 'BEAUTY']
+  };
+  const CLEAN_CATEGORY_BASE = { Electronics: 18000, Apparel: 1400, Home: 1200, Grocery: 500, Beauty: 700 };
+  const CLEAN_CUSTOMERS = ['Aditi Rao', 'Vikram Shetty', 'Sneha Patil', 'Karthik Nair', 'Priya Menon', 'Farida Khan', 'Rohit Verma', 'Neha Joshi', 'Suresh Iyer', 'Meera Kulkarni', 'Arjun Nair', 'Divya Rao', 'Kabir Singh', 'Ananya Bose', 'Manoj Pillai'];
+  const CLEAN_STATUSES = ['Delivered', 'Delivered', 'Delivered', 'Returned', 'Cancelled'];
+  const CLEAN_MON3 = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const CLEAN_DATE_FORMATS = ['iso', 'dmy-slash', 'mdy-dash', 'dmon-dash'];
+
+  /* The first 15 rows are written by hand so the visible sample always shows one
+     clear example of each issue type. Rows 16 onward are generated with the same
+     kinds of issues at random, so the totals below reflect a realistic dataset. */
+  const CLEAN_HANDCRAFTED = [
+    ['ORD-1001', 'Aditi Rao', 'Bengaluru', 'Electronics', 2, '₹18,499', '2025-01-05', 'Delivered'],
+    ['ORD-1002', 'Vikram Shetty', 'mumbai ', 'apparel ', 1, '1299.00', '06/01/2025', 'Delivered'],
+    ['ORD-1001', 'Aditi Rao', 'Bengaluru', 'Electronics', 2, '₹18,499', '2025-01-05', 'Delivered'],
+    ['ORD-1004', 'Sneha Patil', 'BANGALORE', 'Home', 3, '899', '01-07-2025', 'Delivered'],
+    ['ORD-1005', 'Karthik Nair', '', 'Grocery', 1, '450', '08-Jan-2025', 'Delivered'],
+    ['ORD-1006', 'Priya Menon', 'Pune', 'ELECTRONICS ', 4, '22,999', '2025-01-09', 'Delivered'],
+    ['ORD-1007', 'Farida Khan', 'Delhi', 'Beauty', 0, '650', '10/01/2025', 'Cancelled'],
+    ['ORD-1008', 'Rohit Verma', 'mumbai', 'Home ', 2, '', '11-01-2025', 'Delivered'],
+    ['ORD-1009', 'Aditi Rao', 'Bengaluru ', 'Apparel', 1, '1,199', '12-Jan-2025', 'Delivered'],
+    ['ORD-1010', 'Neha Joshi', 'Chennai', 'grocery', 2, '184000', '13/01/2025', 'Delivered'],
+    ['ORD-1011', 'Suresh Iyer', 'Pune', 'Beauty', -1, '720', '2025-01-14', 'Delivered'],
+    ['ORD-1012', 'Meera Kulkarni', 'DELHI', 'Home', 3, '1,050', '15-01-2025', 'Delivered'],
+    ['ORD-1013', 'Arjun Nair', 'bengaluru', 'Electronics', 1, '17,999', '16/01/2025', 'Returned'],
+    ['ORD-1014', 'Divya Rao', 'Mumbai', 'apparel ', 2, '2,398', '17-Jan-2025', 'Delivered'],
+    ['ORD-1015', 'Kabir Singh', 'Chennai', 'ELECTRONICS', 1, '19,499', '2025-01-18', 'Delivered']
+  ].map(r => ({ orderId: r[0], customer: r[1], city: r[2], category: r[3], qty: r[4], price: r[5], date: r[6], status: r[7] }));
+
+  function formatMessyDate(y, m, d, fmt) {
+    const pad = n => String(n).padStart(2, '0');
+    if (fmt === 'iso') return `${y}-${pad(m)}-${pad(d)}`;
+    if (fmt === 'dmy-slash') return `${pad(d)}/${pad(m)}/${y}`;
+    if (fmt === 'mdy-dash') return `${pad(m)}-${pad(d)}-${y}`;
+    return `${pad(d)}-${CLEAN_MON3[m - 1]}-${y}`;
+  }
+
+  /** Generates the 85 additional rows with the same issue types, at realistic random rates */
+  function buildCleaningDataset() {
+    const rnd = mulberry32(910417);
+    const cityKeys = Object.keys(CLEAN_CITY_ALIASES), catKeys = Object.keys(CLEAN_CATEGORY_ALIASES);
+    const rows = [...CLEAN_HANDCRAFTED];
+    let nextId = 1016;
+    for (let n = 0; n < 85; n++) {
+      const isDupe = rnd() < 0.06 && rows.length > 5;
+      const orderId = isDupe ? rows[Math.floor(rnd() * rows.length)].orderId : 'ORD-' + (nextId++);
+      const city = cityKeys[Math.floor(rnd() * cityKeys.length)];
+      const cat = catKeys[Math.floor(rnd() * catKeys.length)];
+      const cityRaw = rnd() < 0.05 ? '' : CLEAN_CITY_ALIASES[city][Math.floor(rnd() * CLEAN_CITY_ALIASES[city].length)];
+      const catRaw = CLEAN_CATEGORY_ALIASES[cat][Math.floor(rnd() * CLEAN_CATEGORY_ALIASES[cat].length)];
+      let qty = Math.ceil(rnd() * 4);
+      if (rnd() < 0.05) qty = rnd() < 0.5 ? 0 : -1;
+      let priceNum = Math.round(CLEAN_CATEGORY_BASE[cat] * (0.7 + rnd() * 0.7));
+      if (rnd() < 0.03) priceNum *= 100;                          // an outlier: looks like a decimal-point slip
+      const priceRaw = rnd() < 0.05 ? '' : (rnd() < 0.5 ? '₹' + priceNum.toLocaleString('en-IN') : String(priceNum));
+      const y = 2025, m = 1 + Math.floor(rnd() * 2), d = 1 + Math.floor(rnd() * 27);
+      const dateRaw = formatMessyDate(y, m, d, CLEAN_DATE_FORMATS[Math.floor(rnd() * CLEAN_DATE_FORMATS.length)]);
+      rows.push({
+        orderId, customer: CLEAN_CUSTOMERS[Math.floor(rnd() * CLEAN_CUSTOMERS.length)],
+        city: cityRaw, category: catRaw, qty, price: priceRaw, date: dateRaw,
+        status: CLEAN_STATUSES[Math.floor(rnd() * CLEAN_STATUSES.length)]
+      });
+    }
+    return rows;
+  }
+
+  function normCity(raw) {
+    const t = (raw || '').trim();
+    if (!t) return null;
+    const up = t.toUpperCase();
+    for (const [canon, aliases] of Object.entries(CLEAN_CITY_ALIASES)) if (aliases.some(a => a.trim().toUpperCase() === up)) return canon;
+    return t;   // text we don't recognise is kept as typed, not silently dropped
+  }
+  function normCategory(raw) {
+    const t = (raw || '').trim();
+    if (!t) return null;
+    const up = t.toUpperCase();
+    for (const [canon, aliases] of Object.entries(CLEAN_CATEGORY_ALIASES)) if (aliases.some(a => a.trim().toUpperCase() === up)) return canon;
+    return t;
+  }
+  function parseMessyPrice(raw) {
+    if (raw == null) return null;
+    const t = String(raw).trim();
+    if (!t) return null;
+    const n = parseFloat(t.replace(/[₹,\s]/g, ''));
+    return Number.isFinite(n) ? n : null;
+  }
+  function parseMessyQty(raw) {
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+  function parseMessyDate(raw) {
+    const t = String(raw).trim();
+    let mth;
+    if ((mth = t.match(/^(\d{4})-(\d{2})-(\d{2})$/))) return { iso: t, fmt: 'iso' };
+    if ((mth = t.match(/^(\d{2})\/(\d{2})\/(\d{4})$/))) return { iso: `${mth[3]}-${mth[2]}-${mth[1]}`, fmt: 'dmy-slash' };
+    if ((mth = t.match(/^(\d{2})-(\d{2})-(\d{4})$/))) return { iso: `${mth[3]}-${mth[1]}-${mth[2]}`, fmt: 'mdy-dash' };
+    if ((mth = t.match(/^(\d{2})-([A-Za-z]{3})-(\d{4})$/))) {
+      const mi = CLEAN_MON3.indexOf(mth[2]);
+      if (mi >= 0) return { iso: `${mth[3]}-${String(mi + 1).padStart(2, '0')}-${mth[1]}`, fmt: 'dmon-dash' };
+    }
+    return { iso: null, fmt: 'unknown' };
+  }
+
+  /** Runs every cleaning rule once. Works the same on the full dataset or on just the visible sample. */
+  function runCleaning(rows) {
+    const seen = new Set();
+    const stats = { duplicates: 0, missingCity: 0, missingPrice: 0, invalidQty: 0, outliers: 0,
+                     cityVariants: new Set(), categoryVariants: new Set(), dateFormats: new Set() };
+    const kept = [], removed = [], flagged = [];
+    rows.forEach((r, idx) => {
+      const dateInfo = parseMessyDate(r.date);
+      stats.dateFormats.add(dateInfo.fmt);
+      const cityNorm = normCity(r.city), catNorm = normCategory(r.category);
+      if (cityNorm === null) stats.missingCity++; else if (r.city.trim() !== cityNorm) stats.cityVariants.add(r.city.trim());
+      if (catNorm && r.category.trim() !== catNorm) stats.categoryVariants.add(r.category.trim());
+
+      if (seen.has(r.orderId)) { stats.duplicates++; removed.push({ ...r, idx, reason: `Duplicate of an earlier ${r.orderId} entry` }); return; }
+      seen.add(r.orderId);
+
+      const price = parseMessyPrice(r.price);
+      if (price === null) { stats.missingPrice++; removed.push({ ...r, idx, reason: 'Missing price, cannot use for revenue' }); return; }
+
+      const qty = parseMessyQty(r.qty);
+      if (qty === null) { stats.invalidQty++; removed.push({ ...r, idx, reason: `Quantity of ${r.qty} is not a usable amount` }); return; }
+
+      const category = catNorm || 'Unknown', city = cityNorm || 'Unknown';
+      const isOutlier = price > (CLEAN_CATEGORY_BASE[category] || 1000) * 8;
+      const cleanRow = { orderId: r.orderId, customer: r.customer, city, category, qty, price, date: dateInfo.iso || r.date, status: r.status, idx };
+      if (isOutlier) { stats.outliers++; flagged.push({ ...cleanRow, reason: `₹${price.toLocaleString('en-IN')} is far above a typical ${category} order` }); return; }
+      kept.push(cleanRow);
+    });
+    return { kept, removed, flagged, stats };
+  }
+
+  function cleaningInsights(rows, result) {
+    const naive = sumF(rows, r => (parseMessyPrice(r.price) || 0) * (Number(r.qty) || 0));
+    const cleanTotal = sumF(result.kept, r => r.price * r.qty);
+    const deltaPct = cleanTotal ? (naive - cleanTotal) / Math.abs(cleanTotal) : 0;
+    const byCat = {};
+    result.kept.forEach(r => { byCat[r.category] = (byCat[r.category] || 0) + r.price * r.qty; });
+    return { naive, cleanTotal, deltaPct, catList: Object.entries(byCat).sort((a, b) => b[1] - a[1]) };
+  }
+
+  function mountDataCleaningCaseStudy(host) {
+    const raw = buildCleaningDataset();
+    const result = runCleaning(raw);
+    const sampleRaw = raw.slice(0, 15);
+    const sampleResult = runCleaning(sampleRaw);      // same rules, just on the visible slice, to caption the table
+    const insights = cleaningInsights(raw, result);
+
+    const tableHost = el('div', { class: 'table-wrap' });
+    const sampleNote = el('p', { class: 'demo-note' });
+    let mode = 'raw';
+    const segRaw = el('button', { type: 'button', class: 'chip-btn', 'aria-pressed': 'true' }, 'Raw data');
+    const segClean = el('button', { type: 'button', class: 'chip-btn', 'aria-pressed': 'false' }, 'Cleaned data');
+    segRaw.addEventListener('click', () => setMode('raw')); segClean.addEventListener('click', () => setMode('clean'));
+    const seg = el('div', { class: 'filters' }, segRaw, segClean);
+
+    function setMode(m) { mode = m; segRaw.setAttribute('aria-pressed', String(m === 'raw')); segClean.setAttribute('aria-pressed', String(m === 'clean')); renderTable(); }
+
+    function renderTable() {
+      if (mode === 'raw') {
+        const head = ['Order ID', 'Customer', 'City', 'Category', 'Qty', 'Price', 'Date', 'Status'].map(h => el('th', { scope: 'col' }, h));
+        const rowsHtml = sampleRaw.map((r, i) => {
+          const dateInfo = parseMessyDate(r.date);
+          const cityNorm = normCity(r.city), catNorm = normCategory(r.category);
+          const isDup = sampleResult.removed.some(x => x.idx === i && x.reason.startsWith('Duplicate'));
+          const cityIssue = cityNorm === null || r.city.trim() !== cityNorm;
+          const catIssue = !!(catNorm && r.category.trim() !== catNorm);
+          const priceVal = parseMessyPrice(r.price);
+          const priceIssue = priceVal === null || priceVal > (CLEAN_CATEGORY_BASE[catNorm] || 1000) * 8;
+          const qtyIssue = parseMessyQty(r.qty) === null;
+          const dateIssue = dateInfo.fmt !== 'iso';
+          const cell = (val, issue, title) => el('td', issue ? { class: 'cell-issue', title } : {}, String(val));
+          return el('tr', {},
+            cell(r.orderId, isDup, 'Duplicate order ID: the same order entered twice'),
+            el('td', {}, r.customer),
+            cell(r.city || '(blank)', cityIssue, cityNorm === null ? 'Missing city' : `Different spelling of ${cityNorm}`),
+            cell(r.category || '(blank)', catIssue, `Different spelling of ${catNorm}`),
+            cell(r.qty, qtyIssue, `${r.qty} is not a usable quantity`),
+            cell(r.price === '' ? '(blank)' : r.price, priceIssue, priceVal === null ? 'Missing price' : 'Looks like an extra digit'),
+            cell(r.date, dateIssue, `Date format: ${dateInfo.fmt === 'unknown' ? 'unrecognised' : dateInfo.fmt}`),
+            el('td', {}, r.status));
+        });
+        tableHost.replaceChildren(el('table', { class: 'data' }, el('thead', {}, el('tr', {}, head)), el('tbody', {}, rowsHtml)));
+        sampleNote.textContent = `Showing the first 15 of ${raw.length} simulated records. Highlighted cells are the issues this sample was written to demonstrate; the counts below are based on all ${raw.length} records.`;
+      } else {
+        const head = ['Order ID', 'Customer', 'City', 'Category', 'Qty', 'Price', 'Date', 'Status', ''].map(h => el('th', { scope: 'col' }, h));
+        const rowsHtml = sampleRaw.map((r, i) => {
+          const rem = sampleResult.removed.find(x => x.idx === i);
+          if (rem) return el('tr', { class: 'is-removed' },
+            el('td', {}, r.orderId), el('td', {}, r.customer), el('td', {}, r.city || '—'), el('td', {}, r.category || '—'),
+            el('td', {}, String(r.qty)), el('td', {}, r.price || '—'), el('td', {}, r.date), el('td', {}, r.status),
+            el('td', {}, el('span', { class: 'pill bad', title: rem.reason }, 'Removed')));
+          const flag = sampleResult.flagged.find(x => x.idx === i);
+          const keep = flag || sampleResult.kept.find(x => x.idx === i);
+          return el('tr', { class: flag ? 'is-flagged' : '' },
+            el('td', {}, keep.orderId), el('td', {}, keep.customer), el('td', {}, keep.city), el('td', {}, keep.category),
+            el('td', { class: 'num' }, String(keep.qty)), el('td', { class: 'num' }, '₹' + keep.price.toLocaleString('en-IN')),
+            el('td', {}, keep.date), el('td', {}, keep.status),
+            el('td', {}, flag ? el('span', { class: 'pill review', title: flag.reason }, 'Review') : el('span', { class: 'pill good' }, 'Kept')));
+        });
+        tableHost.replaceChildren(el('table', { class: 'data' }, el('thead', {}, el('tr', {}, head)), el('tbody', {}, rowsHtml)));
+        sampleNote.textContent = `Of these 15 rows, ${sampleResult.removed.length} were removed and ${sampleResult.flagged.length} were flagged for review; the rest were kept and standardised.`;
+      }
+    }
+
+    const issueItems = [
+      `${result.stats.duplicates} duplicate order IDs, removed after the first occurrence.`,
+      `${result.stats.missingCity} missing city values, filled in as "Unknown" rather than dropped.`,
+      `${result.stats.missingPrice} rows with a missing price, excluded from revenue totals.`,
+      `${result.stats.invalidQty} rows with a zero or negative quantity, excluded as data-entry errors.`,
+      `${result.stats.outliers} prices that looked like a decimal-point slip, flagged for review rather than deleted or guessed at.`,
+      `${result.stats.cityVariants.size} different spellings or cases of a city name, standardised to one (for example "mumbai", "MUMBAI", "Bombay" → "Mumbai").`,
+      `${result.stats.categoryVariants.size} different spellings or cases of a category name, standardised the same way.`,
+      `${result.stats.dateFormats.size} different date formats in use, all converted to one standard (YYYY-MM-DD).`
+    ];
+    const rulesItems = [
+      'Removed exact duplicate order IDs, keeping the first entry.',
+      'Standardised city and category text: trimmed spaces, fixed casing, and mapped known aliases (like "Bangalore") to one spelling.',
+      'Parsed dates written in four different formats into one standard format.',
+      'Converted price text (with ₹ symbols and commas) into numbers, and excluded rows with no price rather than treating a blank as zero.',
+      'Excluded rows with a zero or negative quantity, since these cannot represent a real sale.',
+      'Flagged unusually large prices for manual review instead of silently deleting or "correcting" them, since a real analyst would confirm with the source system first.'
+    ];
+
+    const impactCard = (label, value, sub) => el('div', { class: 'kpi' }, el('div', { class: 'kpi-label' }, label), el('div', { class: 'kpi-value' }, value), el('div', { class: 'kpi-sub' }, sub));
+    const impact = el('div', { class: 'kpis kpis--2' },
+      impactCard('Naive total (no cleaning)', '₹' + Math.round(insights.naive).toLocaleString('en-IN'), 'Summing price × quantity on every raw row'),
+      impactCard('Cleaned total', '₹' + Math.round(insights.cleanTotal).toLocaleString('en-IN'), `${result.kept.length} valid orders`));
+    const impactNote = el('p', { class: 'plot-note' },
+      `Skipping the clean-up would have changed the reported total by about ${fmtPct(Math.abs(insights.deltaPct))} (${insights.deltaPct >= 0 ? 'overstating' : 'understating'} it), mainly from duplicate orders and outlier prices being counted at face value, plus a negative quantity subtracting from the total.`);
+
+    const catMax = insights.catList.length ? insights.catList[0][1] : 1;
+    const catBars = el('div', { class: 'hbars' }, ...insights.catList.map(([name, val]) => el('div', { class: 'hbar is-static' },
+      el('span', { class: 'lab' }, name), el('span', { class: 'track' }, el('span', { class: 'fill', style: { '--w': ((val / catMax) * 100).toFixed(1) + '%' } })),
+      el('span', { class: 'val' }, '₹' + Math.round(val).toLocaleString('en-IN')))));
+
+    const findings = el('div', { class: 'findings' },
+      el('div', {}, el('h4', {}, `Issues found in all ${raw.length} records`), el('ul', {}, issueItems.map(t => el('li', {}, t)))),
+      el('div', {}, el('h4', {}, 'Cleaning rules applied'), el('ol', {}, rulesItems.map(t => el('li', {}, t)))));
+    const lessons = el('div', { class: 'findings' },
+      el('div', {}, el('h4', {}, 'Revenue by category (cleaned data)'), catBars),
+      el('div', {}, el('h4', {}, 'Lessons from this process'), el('ul', {},
+        el('li', {}, 'Check for duplicate keys before summing anything financial — one repeated order ID quietly doubled part of the total.'),
+        el('li', {}, 'Treat a blank field as missing, not zero — a blank price entered as ₹0 would have understated revenue instead.'),
+        el('li', {}, 'Standardise text fields before grouping by them, or "Mumbai" and "mumbai" get counted as two different cities.'),
+        el('li', {}, 'Flag statistical outliers for a person to check rather than deleting or auto-correcting them.'))));
+
+    host.append(seg, tableHost, sampleNote, impact, impactNote,
+      el('h4', {}, 'Full analysis (all records)'), findings, lessons,
+      el('p', { class: 'demo-note' }, `Data is entirely simulated for this demonstration (${raw.length} records). Order IDs, customers and cities are illustrative, not real transactions.`));
+    renderTable();
+  }
+
+  const DEMOS = { sales: mountSalesDashboard, cleaning: mountDataCleaningCaseStudy, ratios: mountRatioAnalyzer, network: mountNetworkDashboard, funds: mountFundsComparison, excel: mountExcelProject };
 
   /** Renders the project list. The first project starts open; demos are built the first time a project is opened. */
   function renderProjects() {
