@@ -626,6 +626,42 @@
     .series.dashed { stroke-dasharray: 7 5; }
     .band { fill: currentColor; opacity: .14; stroke: none; }
 
+    /* --- prompt engineering project --- */
+    .trio--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 720px) { .trio--2 { grid-template-columns: minmax(0, 1fr); } }
+    textarea.prompt-input {
+      width: 100%; min-height: 7.5rem; padding: .7rem .85rem; font: inherit; font-size: .9rem; line-height: 1.5;
+      color: var(--ink); background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-s); resize: vertical;
+    }
+    textarea.prompt-input:focus-visible { border-color: var(--focus); }
+    .prompt-output {
+      min-height: 7.5rem; padding: .85rem 1rem; background: var(--bg); border: 1px solid var(--line);
+      border-radius: var(--r-s); font-size: .88rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .prompt-output.is-empty { color: var(--muted); font-style: italic; }
+    .field-row { display: grid; gap: .9rem; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 1rem; }
+    @media (max-width: 640px) { .field-row { grid-template-columns: minmax(0, 1fr); } }
+    .field-row label, .field-full label { display: grid; gap: .35rem; font-size: .85rem; color: var(--muted); font-weight: 500; }
+    .field-row input, .field-row select, .field-full input, .field-full select {
+      padding: .55rem .7rem; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-s);
+    }
+    .field-full { margin-bottom: 1rem; }
+    pre.generated-prompt {
+      margin: 0; padding: .9rem 1rem; background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-s);
+      font-family: inherit; font-size: .88rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .play-item { padding: 1.5rem 0; border-top: 1px solid var(--line-strong); }
+    .play-item:last-child { border-bottom: 1px solid var(--line-strong); }
+    .play-item h4 { font: 600 1.1rem var(--font-serif); margin: 0 0 .3rem; }
+    .play-item .play-why { color: var(--muted); font-size: .93rem; }
+    .play-compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: .85rem; }
+    @media (max-width: 720px) { .play-compare { grid-template-columns: minmax(0, 1fr); } }
+    .play-box { padding: .8rem .95rem; border-radius: var(--r-s); font-size: .87rem; line-height: 1.5; white-space: pre-wrap; }
+    .play-box .lbl { display: block; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: .4rem; }
+    .play-box.before { background: color-mix(in srgb, var(--bad) 9%, transparent); border: 1px solid color-mix(in srgb, var(--bad) 28%, transparent); }
+    .play-box.after { background: color-mix(in srgb, var(--teal) 9%, transparent); border: 1px solid color-mix(in srgb, var(--teal) 28%, transparent); }
+
+
 
     .hbar .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
     @media (max-width: 480px) { .hbar { grid-template-columns: 5rem minmax(0, 1fr) 4.9rem; gap: .4rem; font-size: .85rem; } }
@@ -1182,6 +1218,20 @@
           'Combined the trend and seasonal pattern to forecast the next 6 months.',
           'Backtested the method by refitting it on the first 30 months and checking its predictions against the last 6 known months.',
           'Used the backtest error to put an honest range, not just a single number, around the forecast.'
+        ]
+      },
+      {
+        id: 'prompting', demo: 'prompting', badge: 'Live AI comparison + reference tools',
+        title: 'Prompt Engineering for Business Tasks',
+        summary: 'A live side-by-side test of a weak prompt against a well-structured one, a tool that builds a ready-to-use prompt for common business tasks, and a short playbook of the techniques behind it.',
+        tags: ['Prompt engineering', 'Applied AI', 'Business writing with AI'],
+        problem: 'Most people write prompts the way they\u2019d ask a colleague a quick question, then get an inconsistent or overly generic answer back. Seeing a real side-by-side comparison, having a structured way to build a prompt, and knowing a few core techniques all close that gap.',
+        dataNote: 'The "Try it live" tab sends your prompts to Claude in real time and may ask your permission the first time; it is capped at a few comparisons per visit to stay considerate of usage. The Prompt Builder and Playbook tabs are static reference tools with no external calls.',
+        approach: [
+          'Built a live side-by-side tester using Claude\u2019s own sample capability, so the comparison is a real model call, not a scripted example.',
+          'Added a per-visit limit and clear error states, since a live demo on a public page should not be able to run away.',
+          'Built a template builder that assembles a structured prompt (role, audience, tone, format) for five common business tasks.',
+          'Wrote a short playbook of five prompting techniques, each with a before-and-after example for a business task.'
         ]
       },
       {
@@ -2604,7 +2654,188 @@
       el('p', { class: 'demo-note' }, 'Uses the same simulated 3-year retailer dataset as the Sales Performance Dashboard project above. This demonstrates a forecasting method; it is not a guarantee of future sales.'));
   }
 
-  const DEMOS = { sales: mountSalesDashboard, cleaning: mountDataCleaningCaseStudy, ratios: mountRatioAnalyzer, network: mountNetworkDashboard, churn: mountChurnDashboard, funds: mountFundsComparison, forecast: mountForecastDashboard, excel: mountExcelProject };
+
+  /* ---------- Project: Prompt Engineering for Business Tasks ---------- */
+
+  /** Resolves a claude.ai runtime capability once; returns null if unavailable (older viewer, no grant, etc.) */
+  async function getCapability(name) {
+    try {
+      if (typeof window === 'undefined' || !window.claude || typeof window.claude.use !== 'function') return null;
+      return await window.claude.use(name);
+    } catch (e) { return null; }
+  }
+
+  const PROMPT_LIVE_DEFAULTS = {
+    naive: 'Summarize this: Q3 revenue grew 12% year on year, driven by strong electronics sales in the South region; margins slipped a little because of discounting; churn ticked up in the postpaid segment.',
+    engineered: 'You are a financial analyst writing a one-paragraph executive summary for a CFO who has 30 seconds to read it. Using only the facts below, lead with the single most decision-relevant point, avoid jargon, keep it under 60 words, and end with one clear recommendation.\n\nFacts: Q3 revenue grew 12% year on year, driven by strong electronics sales in the South region; margins slipped a little because of discounting; churn ticked up in the postpaid segment.'
+  };
+  const PROMPT_LIVE_MAX = 6;
+
+  function buildLivePromptTab() {
+    const naiveTA = el('textarea', { class: 'prompt-input' }); naiveTA.value = PROMPT_LIVE_DEFAULTS.naive;
+    const engTA = el('textarea', { class: 'prompt-input' }); engTA.value = PROMPT_LIVE_DEFAULTS.engineered;
+    const naiveOut = el('div', { class: 'prompt-output is-empty' }, 'Click "Compare live" to see a real answer here.');
+    const engOut = el('div', { class: 'prompt-output is-empty' }, 'Click "Compare live" to see a real answer here.');
+    const status = el('p', { class: 'demo-note' }, 'This sends both prompts to Claude in real time. The model may ask your permission the first time.');
+    const compareBtn = el('button', { type: 'button', class: 'btn btn--primary' }, 'Compare live');
+    const resetBtn = el('button', { type: 'button', class: 'chip-btn' }, 'Reset to example');
+    let count = 0, sampleNS = null, sampleChecked = false;
+
+    resetBtn.addEventListener('click', () => { naiveTA.value = PROMPT_LIVE_DEFAULTS.naive; engTA.value = PROMPT_LIVE_DEFAULTS.engineered; });
+
+    async function ensureSample() { if (!sampleChecked) { sampleNS = await getCapability('sample'); sampleChecked = true; } return sampleNS; }
+
+    async function runOne(promptText, outEl) {
+      outEl.classList.remove('is-empty'); outEl.textContent = 'Thinking…';
+      try {
+        const res = await sampleNS(promptText, { modelTier: 'quick', onText: ({ text }) => { outEl.textContent = text || 'Thinking…'; } });
+        outEl.textContent = (res.text || '(empty response)') + (res.truncated ? ' …' : '');
+      } catch (err) {
+        const code = err && err.code;
+        outEl.textContent = code === 'rate_limited' ? 'Rate-limited right now — please wait a moment and try again.'
+          : code === 'not_granted' ? 'Permission for the live demo was not granted.'
+          : code === 'cancelled' ? 'Cancelled.'
+          : 'Could not get a live response right now.';
+      }
+    }
+
+    compareBtn.addEventListener('click', async () => {
+      const sample = await ensureSample();
+      if (!sample) { status.textContent = 'Live comparison is not available in this viewer right now. The Prompt Builder and Playbook tabs below don\'t need it.'; return; }
+      if (count >= PROMPT_LIVE_MAX) { status.textContent = `This demo is capped at ${PROMPT_LIVE_MAX} live comparisons per visit, to keep it considerate of usage. Reload the page to try again.`; return; }
+      count++;
+      compareBtn.disabled = true; compareBtn.textContent = 'Comparing…';
+      status.textContent = 'Sending both prompts to Claude, live…';
+      await Promise.all([runOne(naiveTA.value, naiveOut), runOne(engTA.value, engOut)]);
+      compareBtn.disabled = false; compareBtn.textContent = 'Compare live';
+      status.textContent = `Live comparison ${count} of ${PROMPT_LIVE_MAX} for this visit. Both answers came from the same model, run just now — only the prompt differs.`;
+    });
+
+    return el('div', {},
+      el('p', { class: 'panel-hint' }, 'Edit either prompt below, or use the example, then compare. Nothing here is pre-written — both boxes are live model output.'),
+      el('div', { class: 'trio trio--2' },
+        el('div', {}, el('h4', {}, 'Naive prompt'), naiveTA),
+        el('div', {}, el('h4', {}, 'Engineered prompt'), engTA)),
+      el('div', { class: 'download-row' }, compareBtn, resetBtn),
+      status,
+      el('div', { class: 'trio trio--2' },
+        el('div', {}, el('h4', {}, 'Naive prompt — live answer'), naiveOut),
+        el('div', {}, el('h4', {}, 'Engineered prompt — live answer'), engOut)));
+  }
+
+  const PROMPT_TASKS = [
+    { id: 'summarize', label: 'Summarize a report or document', role: 'financial analyst', instruction: 'Summarize the material below for a busy reader', format: '3 bullet points, ordered by importance' },
+    { id: 'email',     label: 'Draft a customer or client email', role: 'customer support lead', instruction: 'Turn the notes below into a professional email', format: 'a short email in 3 short paragraphs' },
+    { id: 'feedback',  label: 'Analyze survey or feedback data', role: 'market research analyst', instruction: 'Read the feedback below and identify the main themes and any action worth taking', format: 'one short paragraph followed by 3 bullet points' },
+    { id: 'explain',   label: 'Explain a financial concept simply', role: 'finance teacher', instruction: 'Explain the concept below to someone with no finance background', format: 'two short paragraphs with one everyday analogy' },
+    { id: 'actions',   label: 'Turn meeting notes into action items', role: 'project coordinator', instruction: 'Read the meeting notes below and extract clear action items', format: 'a table with columns: Action, Owner, Due date' }
+  ];
+
+  function buildPromptText(s) {
+    const lines = [`You are a ${s.role || 'helpful assistant'}.`, `${s.instruction}.`];
+    if (s.audience) lines.push(`Write for: ${s.audience}.`);
+    if (s.tone) lines.push(`Tone: ${s.tone}.`);
+    if (s.format) lines.push(`Output format: ${s.format}.`);
+    lines.push('', 'Material:', s.content || '[paste the report, notes or feedback here]');
+    return lines.join('\n');
+  }
+
+  function buildPromptBuilderTab(goToLiveTab, setLiveEngineeredPrompt) {
+    const taskSel = el('select', {}, PROMPT_TASKS.map((t, i) => el('option', { value: String(i) }, t.label)));
+    const roleInput = el('input', { type: 'text', value: PROMPT_TASKS[0].role });
+    const audienceInput = el('input', { type: 'text', placeholder: 'e.g. a first-time customer, a CFO, the whole team' });
+    const toneSel = el('select', {}, ['Neutral', 'Formal', 'Friendly', 'Concise'].map(t => el('option', { value: t }, t)));
+    const formatInput = el('input', { type: 'text', value: PROMPT_TASKS[0].format });
+    const contentTA = el('textarea', { class: 'prompt-input', placeholder: 'Paste the report, notes, feedback or data this prompt should work from…' });
+    const out = el('pre', { class: 'generated-prompt' }, '(click "Generate prompt" to build it)');
+    const genBtn = el('button', { type: 'button', class: 'btn btn--primary' }, 'Generate prompt');
+    const copyBtn = el('button', { type: 'button', class: 'chip-btn' }, 'Copy');
+    const useLiveBtn = el('button', { type: 'button', class: 'chip-btn' }, 'Try this prompt live');
+    let generated = '';
+
+    taskSel.addEventListener('change', () => { const t = PROMPT_TASKS[+taskSel.value]; roleInput.value = t.role; formatInput.value = t.format; });
+
+    function generate() {
+      const t = PROMPT_TASKS[+taskSel.value];
+      generated = buildPromptText({ role: roleInput.value, instruction: t.instruction, audience: audienceInput.value, tone: toneSel.value, format: formatInput.value, content: contentTA.value });
+      out.textContent = generated;
+    }
+    genBtn.addEventListener('click', generate);
+    copyBtn.addEventListener('click', () => { if (generated) copy(generated, 'Prompt copied.'); else showToast('Generate a prompt first.'); });
+    useLiveBtn.addEventListener('click', () => {
+      if (!generated) { showToast('Generate a prompt first.'); return; }
+      setLiveEngineeredPrompt(generated);
+      goToLiveTab();
+    });
+
+    return el('div', {},
+      el('div', { class: 'field-full' }, el('label', {}, 'Task', taskSel)),
+      el('div', { class: 'field-row' },
+        el('label', {}, 'Role for the AI to take', roleInput),
+        el('label', {}, 'Audience (optional)', audienceInput)),
+      el('div', { class: 'field-row' },
+        el('label', {}, 'Tone', toneSel),
+        el('label', {}, 'Output format', formatInput)),
+      el('div', { class: 'field-full' }, el('label', {}, 'Content to work from', contentTA)),
+      el('div', { class: 'download-row' }, genBtn),
+      el('h4', { style: { 'margin-top': '1.25rem' } }, 'Generated prompt'),
+      out,
+      el('div', { class: 'download-row' }, copyBtn, useLiveBtn,
+        el('span', { class: 'demo-note', style: { margin: '0' } }, 'Paste this into any AI tool, or send it to the live tab above.')));
+  }
+
+  const PROMPT_PLAYBOOK = [
+    { name: 'Give it a role', why: 'A named role narrows the vocabulary, tone and assumptions the model reaches for.',
+      before: 'Write about diversification.',
+      after: 'You are a financial adviser explaining diversification to a first-time investor, in two short paragraphs, using one everyday analogy.' },
+    { name: 'Be specific about format and length', why: 'Without a limit, the model guesses how much detail you want — usually too much.',
+      before: 'Summarize this quarter\'s results.',
+      after: 'Summarize this quarter\'s results in exactly 3 bullet points, each under 15 words, ordered by financial impact.' },
+    { name: 'Show it an example (few-shot)', why: 'One worked example does more to fix the output shape than a paragraph of instructions.',
+      before: 'Categorize this customer complaint.',
+      after: 'Categorize each complaint as Billing, Network, or Other. Example: "My bill is wrong" → Billing. Now categorize: "The connection keeps dropping."' },
+    { name: 'Ask it to reason before answering', why: 'Asking for the reasoning first reduces jumps to a plausible-sounding but ungrounded answer.',
+      before: 'Should we approve this loan?',
+      after: 'List the applicant\'s income, existing debt and credit history. Then, reasoning step by step from those figures, state whether to approve the loan and why.' },
+    { name: 'Ask it to check its own work', why: 'A second pass with a specific thing to look for catches issues a single pass misses.',
+      before: 'Write a client email about the delay.',
+      after: 'Write a client email about the delay. Then re-read it and rewrite anything that sounds apologetic to the point of undermining confidence.' }
+  ];
+
+  function buildPlaybookTab() {
+    return el('div', {}, PROMPT_PLAYBOOK.map(item => el('div', { class: 'play-item' },
+      el('h4', {}, item.name), el('p', { class: 'play-why' }, item.why),
+      el('div', { class: 'play-compare' },
+        el('div', { class: 'play-box before' }, el('span', { class: 'lbl' }, 'Before'), item.before),
+        el('div', { class: 'play-box after' }, el('span', { class: 'lbl' }, 'After'), item.after)))));
+  }
+
+  function mountPromptingProject(host) {
+    const liveWrap = el('div', {}); const builderWrap = el('div', { hidden: true }); const playbookWrap = el('div', { hidden: true });
+    const tabs = { live: liveWrap, builder: builderWrap, playbook: playbookWrap };
+    const segLive = el('button', { type: 'button', class: 'chip-btn', 'aria-pressed': 'true' }, 'Try it live');
+    const segBuilder = el('button', { type: 'button', class: 'chip-btn', 'aria-pressed': 'false' }, 'Prompt builder');
+    const segPlaybook = el('button', { type: 'button', class: 'chip-btn', 'aria-pressed': 'false' }, 'Playbook');
+    const seg = el('div', { class: 'filters' }, segLive, segBuilder, segPlaybook);
+
+    function setTab(name) {
+      [['live', segLive], ['builder', segBuilder], ['playbook', segPlaybook]].forEach(([n, btn]) => { btn.setAttribute('aria-pressed', String(n === name)); tabs[n].hidden = n !== name; });
+    }
+    segLive.addEventListener('click', () => setTab('live'));
+    segBuilder.addEventListener('click', () => setTab('builder'));
+    segPlaybook.addEventListener('click', () => setTab('playbook'));
+
+    liveWrap.append(buildLivePromptTab());
+    // grab the engineered-prompt textarea (2nd textarea in the live tab) so the builder tab can hand a prompt to it
+    const setLiveEngineeredPrompt = text => { const tas = liveWrap.querySelectorAll('textarea.prompt-input'); if (tas[1]) tas[1].value = text; };
+    builderWrap.append(buildPromptBuilderTab(() => setTab('live'), setLiveEngineeredPrompt));
+    playbookWrap.append(buildPlaybookTab());
+
+    host.append(seg, liveWrap, builderWrap, playbookWrap,
+      el('p', { class: 'demo-note' }, 'The live tab calls Claude directly from this page; the builder and playbook are static reference tools. Business examples throughout are illustrative.'));
+  }
+
+  const DEMOS = { sales: mountSalesDashboard, cleaning: mountDataCleaningCaseStudy, ratios: mountRatioAnalyzer, network: mountNetworkDashboard, churn: mountChurnDashboard, funds: mountFundsComparison, forecast: mountForecastDashboard, prompting: mountPromptingProject, excel: mountExcelProject };
 
   /** Renders the project list. The first project starts open; demos are built the first time a project is opened. */
   function renderProjects() {
