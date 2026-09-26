@@ -78,6 +78,7 @@
       --c-work: var(--teal);
       --c-internship: var(--blue);
       --violet: #7A4FB5;      /* 4th line colour, funds comparison chart */
+      --rose: #B5457A;        /* 5th series colour, BI dashboard */
       /* Shape & shadow */
       --r-s: 4px;
       --bad: #B3261E;          /* negative / weakening indicators */
@@ -120,7 +121,7 @@
       --line: #243652; --line-strong: #37506F;
       --grid: rgba(230, 236, 245, 0.045);
       --accent: #E0AE62; --accent-soft: #2E2617; --on-accent: #0B1524;
-      --teal: #4CC9B5; --blue: #7EA6EA; --focus: #7EA6EA; --violet: #B79CE8;
+      --teal: #4CC9B5; --blue: #7EA6EA; --focus: #7EA6EA; --violet: #B79CE8; --rose: #E397BE;
       --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 32px -12px rgba(0, 0, 0, .55);
         --aurora: .3;
     }
@@ -661,6 +662,56 @@
     .play-box.before { background: color-mix(in srgb, var(--bad) 9%, transparent); border: 1px solid color-mix(in srgb, var(--bad) 28%, transparent); }
     .play-box.after { background: color-mix(in srgb, var(--teal) 9%, transparent); border: 1px solid color-mix(in srgb, var(--teal) 28%, transparent); }
 
+    /* --- BI dashboard: slicers, cross-filter banner, breadcrumb --- */
+    .slicer-bar { display: flex; flex-wrap: wrap; gap: 1.1rem 1.75rem; align-items: flex-start; margin-bottom: 1rem; }
+    .slicer-group { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .cross-banner {
+      display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; padding: .6rem .95rem; margin-bottom: 1.1rem;
+      background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: var(--r-s); font-size: .88rem;
+    }
+    .cross-banner .x { margin-left: auto; background: none; border: none; color: var(--accent); font-weight: 700; cursor: pointer; font-size: 1rem; line-height: 1; padding: .1rem .3rem; }
+    .breadcrumb { display: flex; align-items: center; gap: .5rem; font-size: .88rem; color: var(--muted); margin-bottom: .75rem; }
+    .breadcrumb button { background: none; border: none; color: var(--accent); font-weight: 600; cursor: pointer; padding: 0; font: inherit; }
+
+    /* --- BI dashboard: chart grid + donut --- */
+    .bi-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 1.25rem; }
+    @media (max-width: 900px) { .bi-grid { grid-template-columns: minmax(0, 1fr); } }
+    .bi-grid .panel h4 { color: var(--accent); }
+    .donut-wrap { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
+    .donut-svg { flex: none; }
+    .donut-legend { display: grid; gap: .3rem; font-size: .85rem; flex: 1; min-width: 9rem; }
+    .donut-legend button { display: flex; align-items: center; gap: .5rem; background: none; border: none; padding: .2rem 0; cursor: pointer; text-align: left; color: var(--ink); font: inherit; width: 100%; }
+    .donut-legend button.is-dimmed { opacity: .45; }
+    .donut-legend i { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+    .donut-legend .val { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    /* --- BI dashboard: heatmap matrix --- */
+    table.heatmap { width: 100%; border-collapse: collapse; font-size: .74rem; }
+    table.heatmap th { padding: .25rem; font-weight: 500; color: var(--muted); text-align: center; }
+    table.heatmap td { padding: 2px; }
+    .heatmap-cell { display: block; width: 100%; height: 24px; border: none; cursor: pointer; border-radius: 2px; }
+    .heatmap-row-label { display: block; width: 100%; padding: .3rem .5rem; text-align: left; font-weight: 600; font-size: .78rem; cursor: pointer; background: none; border: none; color: var(--ink); white-space: nowrap; }
+    tr.heatmap-row.is-dimmed .heatmap-cell, tr.heatmap-row.is-dimmed .heatmap-row-label { opacity: .35; }
+    tr.heatmap-row.is-active .heatmap-row-label { color: var(--accent); }
+
+    /* --- BI dashboard: stacked channel bars --- */
+    .stack-row {
+      display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto; gap: .6rem; align-items: center;
+      padding: .45rem 0; cursor: pointer; border: none; background: none; width: 100%; text-align: left; font: inherit; color: var(--ink);
+    }
+    .stack-row.is-dimmed { opacity: .4; }
+    .stack-row.is-active .lab-region { color: var(--accent); font-weight: 700; }
+    .stack-track { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface-2); }
+    .stack-seg { height: 100%; }
+    .stack-legend { display: flex; gap: 1.1rem; font-size: .82rem; color: var(--muted); margin-bottom: .5rem; }
+    .stack-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+    .stack-legend i { width: 12px; height: 3px; border-radius: 2px; }
+
+    /* --- BI dashboard: scatter/bubble quadrant chart --- */
+    svg.scatter circle { cursor: pointer; transition: opacity .15s; }
+    .bi-hint { font-size: .87rem; color: var(--muted); margin-bottom: 1rem; }
+
+
 
 
     .hbar .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -1122,6 +1173,21 @@
        To add a project with no interactive demo, omit `demo`.
        --------------------------------------------------------------- */
     projects: [
+      {
+        id: 'bi', demo: 'bi', badge: 'Simulated data, Power BI-style interactivity',
+        title: 'Executive BI Dashboard: Sales, Region and Channel Analysis',
+        summary: 'A full multi-chart report with slicers, click-to-cross-filter across every visual, and drill-down from category into subcategory \u2014 built to work the way a Power BI or Tableau report does.',
+        tags: ['Cross-filtering', 'Drill-down', 'Multi-chart reporting'],
+        problem: 'A single chart rarely answers a real business question on its own. An executive reviewing performance needs to slice by year, region and channel, then click into whatever looks interesting and see every other number on the page react \u2014 the way a proper BI report works, not a set of separate static charts.',
+        dataNote: 'A more detailed simulated dataset than the other dashboards on this site: 3 years, 4 regions, 5 categories split into 11 subcategories, and 2 sales channels, built specifically to support a full drill-down and cross-filter experience.',
+        approach: [
+          'Modelled a richer dataset with a category/subcategory hierarchy and an online/retail channel split.',
+          'Built slicers for year, region and category, plus a channel switch, all combinable at once.',
+          'Made every chart a two-way filter: clicking a bar, slice, cell or bubble filters every other chart and KPI, the way a Power BI report page cross-highlights.',
+          'Added a drill-down on the category chart into its subcategories, with a breadcrumb back to the summary view.',
+          'Used several chart types deliberately \u2014 line, bar, donut, heatmap matrix, stacked bar and a bubble quadrant chart \u2014 rather than repeating one visual.'
+        ]
+      },
       {
         id: 'sales', demo: 'sales', badge: 'Simulated data',
         title: 'Retail Sales Performance Dashboard',
@@ -2747,7 +2813,328 @@
     );
   }
 
-  const DEMOS = { sales: mountSalesDashboard, cleaning: mountDataCleaningCaseStudy, ratios: mountRatioAnalyzer, network: mountNetworkDashboard, churn: mountChurnDashboard, funds: mountFundsComparison, forecast: mountForecastDashboard, prompting: mountPromptingProject, excel: mountExcelProject };
+
+  /* ====================================================================
+     3c. BI DASHBOARD (Executive Sales, Region & Channel report)
+     A richer, self-contained dataset and a set of linked charts: every
+     chart both reads the shared filter state and writes to it on click,
+     the way visuals on a Power BI or Tableau report page cross-filter
+     each other. See BI_MODEL for the data assumptions.
+     ==================================================================== */
+  const BI_MODEL = {
+    seed: 88213,
+    years: [2023, 2024, 2025],
+    regions: ['South', 'West', 'North', 'East'],
+    categories: {
+      Electronics: ['Mobiles', 'Laptops', 'Accessories'],
+      Apparel: ['Menswear', 'Womenswear'],
+      Home: ['Furniture', 'Decor'],
+      Grocery: ['Fresh', 'Packaged'],
+      Beauty: ['Skincare', 'Makeup']
+    },
+    channels: ['Online', 'Retail'],
+    catBase: { Electronics: 46, Apparel: 30, Home: 22, Grocery: 60, Beauty: 14 },
+    catMargin: { Electronics: 0.12, Apparel: 0.24, Home: 0.18, Grocery: 0.09, Beauty: 0.32 },
+    catOnlineShare: { Electronics: 0.62, Apparel: 0.48, Home: 0.35, Grocery: 0.18, Beauty: 0.55 },
+    regionScale: { South: 1.15, West: 1.05, North: 0.95, East: 0.72 },
+    regionGrowth: { South: 1.11, West: 1.08, North: 1.06, East: 1.015 },
+    season: [0.90, 0.88, 0.95, 0.97, 1.00, 0.98, 0.95, 1.00, 1.05, 1.30, 1.40, 1.20]
+  };
+  const BI_CAT_COLORS = { Electronics: 'var(--accent)', Apparel: 'var(--teal)', Home: 'var(--blue)', Grocery: 'var(--violet)', Beauty: 'var(--rose)' };
+  const BI_REGION_COLORS = { South: 'var(--accent)', West: 'var(--teal)', North: 'var(--blue)', East: 'var(--violet)' };
+
+  /** One row per year/month/region/category/subcategory/channel. Subcategory
+      shares of a category are randomised but always sum back to the category total. */
+  function buildBIData() {
+    const M = BI_MODEL, rnd = mulberry32(M.seed), rows = [];
+    const catNames = Object.keys(M.categories);
+    M.years.forEach((y, yi) => { for (let m = 0; m < 12; m++) {
+      M.regions.forEach(region => catNames.forEach(cat => {
+        const subs = M.categories[cat];
+        const catRevMonth = M.catBase[cat] * M.regionScale[region] * Math.pow(M.regionGrowth[region], yi) * M.season[m] * (0.94 + rnd() * 0.12);
+        const rawW = subs.map(() => 0.6 + rnd() * 0.8), sumW = rawW.reduce((a, b) => a + b, 0);
+        subs.forEach((sub, si) => {
+          const subRev = catRevMonth * rawW[si] / sumW;
+          const onlineShare = M.catOnlineShare[cat];
+          M.channels.forEach(channel => {
+            const share = channel === 'Online' ? onlineShare : (1 - onlineShare);
+            const noise = 0.9 + rnd() * 0.2;
+            const revenue = subRev * share * noise;
+            const margin = M.catMargin[cat] + (rnd() - 0.5) * 0.02;
+            const units = Math.max(1, Math.round((revenue * 100000) / (600 + rnd() * 900)));
+            rows.push({ y, m, region, category: cat, sub, channel, revenue, profit: revenue * margin, units });
+          });
+        });
+      }));
+    }});
+    return rows;
+  }
+
+  function biPolarPoint(cx, cy, r, angleDeg) { const a = (angleDeg - 90) * Math.PI / 180; return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }; }
+  function biDonutPath(cx, cy, rOuter, rInner, a0, a1) {
+    const p0o = biPolarPoint(cx, cy, rOuter, a1), p1o = biPolarPoint(cx, cy, rOuter, a0);
+    const p0i = biPolarPoint(cx, cy, rInner, a1), p1i = biPolarPoint(cx, cy, rInner, a0);
+    const large = (a1 - a0) > 180 ? 1 : 0;
+    return `M ${p0o.x.toFixed(2)} ${p0o.y.toFixed(2)} A ${rOuter} ${rOuter} 0 ${large} 0 ${p1o.x.toFixed(2)} ${p1o.y.toFixed(2)} L ${p1i.x.toFixed(2)} ${p1i.y.toFixed(2)} A ${rInner} ${rInner} 0 ${large} 1 ${p0i.x.toFixed(2)} ${p0i.y.toFixed(2)} Z`;
+  }
+
+  function mountBIDashboard(host) {
+    const allRows = buildBIData();
+    const M = BI_MODEL, catNames = Object.keys(M.categories);
+    const state = { years: new Set(M.years), regions: new Set(M.regions), categories: new Set(catNames), channel: 'all', cross: { dim: null, value: null }, drillCategory: null };
+
+    /** Filters rows by every active slicer and cross-filter, except any dimension named in excludeDims
+        (so the chart representing that dimension can still show all of its own items, for highlighting). */
+    function scoped(excludeDims) {
+      excludeDims = excludeDims || [];
+      return allRows.filter(r => {
+        if (!state.years.has(r.y)) return false;
+        if (!state.regions.has(r.region)) return false;
+        if (!state.categories.has(r.category)) return false;
+        if (state.channel !== 'all' && r.channel !== state.channel) return false;
+        if (state.drillCategory && r.category !== state.drillCategory) return false;
+        if (state.cross.dim === 'region' && !excludeDims.includes('region') && r.region !== state.cross.value) return false;
+        if (state.cross.dim === 'sub' && !excludeDims.includes('sub') && r.sub !== state.cross.value) return false;
+        return true;
+      });
+    }
+    function toggleCross(dim, value) { state.cross = (state.cross.dim === dim && state.cross.value === value) ? { dim: null, value: null } : { dim, value }; render(); }
+    function drillInto(cat) { state.drillCategory = cat; state.cross = { dim: null, value: null }; render(); }
+    function drillBack() { state.drillCategory = null; state.cross = { dim: null, value: null }; render(); }
+    function resetAll() { state.years = new Set(M.years); state.regions = new Set(M.regions); state.categories = new Set(catNames); state.channel = 'all'; state.cross = { dim: null, value: null }; state.drillCategory = null; render(); }
+
+    // ---------------- static shell ----------------
+    const slicerHost = el('div', { class: 'slicer-bar' });
+    const crossBannerHost = el('div', {});
+    const kpiHost = el('div', { class: 'kpis' });
+    const breadcrumbHost = el('div', {});
+    const trendPanel = el('div', { role: 'img' });
+    const trendNote = el('p', { class: 'plot-note' });
+    const barHost = el('div', { class: 'hbars' });
+    const donutHost = el('div', { class: 'donut-wrap' });
+    const topSubHost = el('div', { class: 'hbars' });
+    const heatmapHost = el('div', {});
+    const stackHost = el('div', {});
+    const scatterHost = el('div', { role: 'img' });
+    const scatterNote = el('p', { class: 'plot-note' });
+
+    host.append(
+      el('p', { class: 'bi-hint' }, 'Click any bar, slice, cell or bubble to cross-filter every other chart. Click a category to drill into its subcategories.'),
+      slicerHost, crossBannerHost, kpiHost,
+      el('div', { class: 'bi-grid' },
+        el('div', { class: 'panel' }, el('h4', {}, 'Revenue and profit trend (₹ lakh)'), trendPanel, trendNote),
+        el('div', { class: 'panel' },
+          el('div', { class: 'download-row', style: { 'margin-bottom': '.4rem' } }, el('h4', { style: { margin: '0' } }, 'Category revenue'), el('span', {})),
+          breadcrumbHost, barHost),
+        el('div', { class: 'panel' }, el('h4', {}, 'Revenue share by region'), donutHost),
+        el('div', { class: 'panel' }, el('h4', {}, 'Top 8 subcategories'), el('p', { class: 'panel-hint' }, 'By revenue in the current selection.'), topSubHost),
+        el('div', { class: 'panel' }, el('h4', {}, 'Region × month revenue'), heatmapHost),
+        el('div', { class: 'panel' },
+          el('h4', {}, 'Channel mix by region'),
+          el('div', { class: 'stack-legend' }, el('span', {}, el('i', { style: { background: 'var(--accent)' } }), 'Online'), el('span', {}, el('i', { style: { background: 'var(--teal)' } }), 'Retail')),
+          stackHost)),
+      el('div', { class: 'panel', style: { 'margin-top': '1.25rem' } }, el('h4', {}, 'Margin vs revenue by category'), el('p', { class: 'panel-hint' }, 'Bubble size is units sold. Click a bubble to drill into that category.'), scatterHost, scatterNote),
+      el('p', { class: 'demo-note', style: { 'margin-top': '1.25rem' } }, 'All figures are simulated. Slicers, cross-filtering and drill-down all run live against the same in-browser dataset.')
+    );
+
+    // ---------------- slicers ----------------
+    function chip(label, pressed, onClick) { return el('button', { type: 'button', class: 'chip-btn', 'aria-pressed': String(pressed), onclick: onClick }, label); }
+    function renderSlicers() {
+      const yearChips = M.years.map(y => chip(String(y), state.years.has(y), () => { if (state.years.has(y)) { if (state.years.size > 1) state.years.delete(y); } else state.years.add(y); render(); }));
+      const regionChips = M.regions.map(r => chip(r, state.regions.has(r), () => { if (state.regions.has(r)) { if (state.regions.size > 1) state.regions.delete(r); } else state.regions.add(r); render(); }));
+      const catChips = catNames.map(c => chip(c, state.categories.has(c), () => { if (state.categories.has(c)) { if (state.categories.size > 1) state.categories.delete(c); } else state.categories.add(c); render(); }));
+      const channelSel = el('select', { onchange: e => { state.channel = e.target.value; render(); } },
+        el('option', { value: 'all', selected: state.channel === 'all' }, 'All channels'),
+        M.channels.map(c => el('option', { value: c, selected: state.channel === c }, c)));
+      slicerHost.replaceChildren(
+        el('div', { class: 'field' }, 'Year', el('div', { class: 'slicer-group' }, yearChips)),
+        el('div', { class: 'field' }, 'Region', el('div', { class: 'slicer-group' }, regionChips)),
+        el('div', { class: 'field' }, 'Category', el('div', { class: 'slicer-group' }, catChips)),
+        el('div', { class: 'field' }, 'Channel', channelSel),
+        el('div', { class: 'field' }, '\u00a0', el('button', { type: 'button', class: 'chip-btn', onclick: resetAll }, 'Reset all filters')));
+    }
+
+    function renderCrossBanner() {
+      if (!state.cross.dim) { crossBannerHost.replaceChildren(); return; }
+      const label = state.cross.dim === 'region' ? `Region = ${state.cross.value}` : `Subcategory = ${state.cross.value}`;
+      crossBannerHost.replaceChildren(el('div', { class: 'cross-banner' }, `Cross-filter active: ${label}`,
+        el('button', { type: 'button', class: 'x', 'aria-label': 'Clear cross-filter', onclick: () => { state.cross = { dim: null, value: null }; render(); } }, '\u00d7')));
+    }
+
+    // ---------------- KPIs ----------------
+    function renderKPIs() {
+      const rows = scoped([]);
+      const revenue = sumBy(rows, 'revenue'), profit = sumBy(rows, 'profit'), units = sumBy(rows, 'units');
+      const years = [...state.years].sort((a, b) => a - b);
+      let growthText = 'needs 2 selected years';
+      if (years.length >= 2) {
+        const latest = years[years.length - 1], prev = years[years.length - 2];
+        const latestRev = sumBy(rows.filter(r => r.y === latest), 'revenue'), prevRev = sumBy(rows.filter(r => r.y === prev), 'revenue');
+        if (prevRev) growthText = `${latestRev >= prevRev ? '+' : ''}${fmtPct(latestRev / prevRev - 1)} (${prev}→${latest})`;
+      }
+      const kpi = (label, value, sub) => el('div', { class: 'kpi' }, el('div', { class: 'kpi-label' }, label), el('div', { class: 'kpi-value' }, value), el('div', { class: 'kpi-sub' }, sub));
+      kpiHost.replaceChildren(
+        kpi('Revenue', fmtCr(revenue), 'in current selection'),
+        kpi('Profit', fmtCr(profit), revenue ? fmtPct(profit / revenue) + ' margin' : ''),
+        kpi('Units sold', units.toLocaleString('en-IN'), 'in current selection'),
+        kpi('Revenue growth', growthText, 'year over year'),
+        kpi('Rows in scope', rows.length.toLocaleString('en-IN'), `of ${allRows.length.toLocaleString('en-IN')} total`));
+    }
+
+    // ---------------- trend (line, one series per selected year) ----------------
+    function renderTrend() {
+      const rows = scoped([]);
+      const years = [...state.years].sort((a, b) => a - b);
+      const seriesClasses = ['s0', 's1', 's2'];
+      const series = years.map((y, i) => ({ y, cls: seriesClasses[i % 3], values: Array.from({ length: 12 }, (_, m) => sumBy(rows.filter(r => r.y === y && r.m === m), 'revenue')) }));
+      const W = Math.max(280, Math.round(trendPanel.clientWidth || 560)), H = 220, L = 42, R = 10, T = 12, B = 24;
+      const maxV = Math.max(1, ...series.flatMap(s => s.values));
+      const top = Math.ceil(maxV * 1.15 / 20) * 20;
+      const x = i => L + (W - L - R) * i / 11, y = v => T + (H - T - B) * (1 - v / top);
+      let g = '';
+      for (let i = 0; i <= 4; i++) { const v = top * i / 4; g += `<line class="grid-line" x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="axis-text" x="${L - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${Math.round(v)}</text>`; }
+      MONTHS.forEach((mn, i) => { if (i % 2 === 0) g += `<text class="axis-text" x="${x(i).toFixed(1)}" y="${H - 6}" text-anchor="middle">${mn}</text>`; });
+      const body = series.map(s => `<polyline class="series ${s.cls}" points="${s.values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}"/>`).join('');
+      trendPanel.innerHTML = `<svg class="line" viewBox="0 0 ${W} ${H}" aria-hidden="true">${g}${body}</svg>`;
+      trendNote.textContent = years.length ? `Lines: ${years.join(', ')}. Reflects every active slicer and cross-filter.` : 'Select at least one year.';
+    }
+
+    // ---------------- category / subcategory bar (drill-down) ----------------
+    function biBar(name, value, max, active, dimmed, onClick) {
+      return el('button', { type: 'button', class: 'hbar' + (dimmed ? '' : ''), 'aria-pressed': String(active), style: dimmed ? { opacity: '.4' } : {}, onclick: onClick },
+        el('span', { class: 'lab' }, name), el('span', { class: 'track' }, el('span', { class: 'fill', style: { '--w': (max ? (value / max) * 100 : 0).toFixed(1) + '%' } })), el('span', { class: 'val' }, fmtCr(value)));
+    }
+    function renderCategoryBar() {
+      if (state.drillCategory) {
+        const cat = state.drillCategory, subs = M.categories[cat];
+        breadcrumbHost.replaceChildren(el('div', { class: 'breadcrumb' }, el('button', { type: 'button', onclick: drillBack }, '\u25c0 All categories'), ` / ${cat}`));
+        const rows = scoped(['sub']);
+        const data = subs.map(sub => ({ name: sub, value: sumBy(rows.filter(r => r.sub === sub), 'revenue') }));
+        const max = Math.max(...data.map(d => d.value), 1);
+        barHost.replaceChildren(...data.map(d => biBar(d.name, d.value, max, state.cross.dim === 'sub' && state.cross.value === d.name,
+          state.cross.dim === 'sub' && state.cross.value !== d.name, () => toggleCross('sub', d.name))));
+      } else {
+        breadcrumbHost.replaceChildren(el('div', { class: 'breadcrumb' }, 'All categories \u2014 click one to drill in'));
+        const rows = scoped([]);
+        const data = catNames.filter(c => state.categories.has(c)).map(cat => ({ name: cat, value: sumBy(rows.filter(r => r.category === cat), 'revenue') }));
+        const max = Math.max(...data.map(d => d.value), 1);
+        barHost.replaceChildren(...data.map(d => biBar(d.name, d.value, max, false, false, () => drillInto(d.name))));
+      }
+    }
+
+    // ---------------- donut (region) ----------------
+    function renderDonut() {
+      const rows = scoped(['region']);
+      const data = M.regions.filter(r => state.regions.has(r)).map(region => ({ name: region, value: sumBy(rows.filter(r2 => r2.region === region), 'revenue') }));
+      const total = data.reduce((a, d) => a + d.value, 0) || 1;
+      const cx = 90, cy = 90, rOuter = 78, rInner = 46;
+      let angle = 0, paths = '';
+      data.forEach(d => {
+        const a0 = angle, a1 = angle + (d.value / total) * 360; angle = a1;
+        const dim = state.cross.dim === 'region' && state.cross.value !== d.name;
+        paths += `<path d="${biDonutPath(cx, cy, rOuter, rInner, a0, a1)}" fill="${BI_REGION_COLORS[d.name]}" opacity="${dim ? 0.3 : 1}" data-name="${d.name}" style="cursor:pointer"><title>${d.name}: ${fmtCr(d.value)} (${fmtPct(d.value / total)})</title></path>`;
+      });
+      const svg = el('div', {}); svg.innerHTML = `<svg viewBox="0 0 180 180" width="180" height="180">${paths}</svg>`;
+      svg.querySelectorAll('path').forEach(p => p.addEventListener('click', () => toggleCross('region', p.dataset.name)));
+      const legend = el('div', { class: 'donut-legend' }, data.map(d => {
+        const dim = state.cross.dim === 'region' && state.cross.value !== d.name;
+        return el('button', { type: 'button', class: dim ? 'is-dimmed' : '', onclick: () => toggleCross('region', d.name) },
+          el('i', { style: { background: BI_REGION_COLORS[d.name] } }), d.name, el('span', { class: 'val' }, fmtPct(d.value / total)));
+      }));
+      donutHost.replaceChildren(svg, legend);
+    }
+
+    // ---------------- top subcategories ----------------
+    function renderTopSub() {
+      const rows = scoped(['sub']);
+      const bySub = {};
+      rows.forEach(r => { bySub[r.sub] = (bySub[r.sub] || 0) + r.revenue; });
+      const top = Object.entries(bySub).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      const max = top.length ? top[0][1] : 1;
+      topSubHost.replaceChildren(...top.map(([name, value]) => biBar(name, value, max, state.cross.dim === 'sub' && state.cross.value === name,
+        state.cross.dim === 'sub' && state.cross.value !== name, () => toggleCross('sub', name))));
+    }
+
+    // ---------------- heatmap (region x month) ----------------
+    function renderHeatmap() {
+      const rows = scoped(['region']);
+      const regionsShown = M.regions.filter(r => state.regions.has(r));
+      const matrix = {}; regionsShown.forEach(r => { matrix[r] = Array(12).fill(0); });
+      rows.forEach(r => { matrix[r.region][r.m] += r.revenue; });
+      const maxV = Math.max(1, ...regionsShown.flatMap(r => matrix[r]));
+      const head = el('tr', {}, el('th', {}), MONTHS.map(m => el('th', {}, m)));
+      const bodyRows = regionsShown.map(region => {
+        const dim = state.cross.dim === 'region' && state.cross.value !== region;
+        const active = state.cross.dim === 'region' && state.cross.value === region;
+        const cells = matrix[region].map((v, mi) => el('td', {}, el('button', {
+          type: 'button', class: 'heatmap-cell', style: { background: `color-mix(in srgb, var(--accent) ${Math.round(8 + 70 * (v / maxV))}%, var(--surface-2))` },
+          title: `${region}, ${MONTHS[mi]}: ${fmtCr(v)}`, onclick: () => toggleCross('region', region)
+        })));
+        return el('tr', { class: 'heatmap-row' + (dim ? ' is-dimmed' : '') + (active ? ' is-active' : '') },
+          el('td', {}, el('button', { type: 'button', class: 'heatmap-row-label', onclick: () => toggleCross('region', region) }, region)), cells);
+      });
+      heatmapHost.replaceChildren(el('div', { class: 'table-wrap' }, el('table', { class: 'heatmap' }, el('thead', {}, head), el('tbody', {}, bodyRows))));
+    }
+
+    // ---------------- stacked channel bars ----------------
+    function renderStack() {
+      const rows = scoped(['region']);
+      const regionsShown = M.regions.filter(r => state.regions.has(r));
+      const data = regionsShown.map(region => {
+        const rr = rows.filter(r => r.region === region);
+        return { region, online: sumBy(rr.filter(r => r.channel === 'Online'), 'revenue'), retail: sumBy(rr.filter(r => r.channel === 'Retail'), 'revenue') };
+      });
+      const max = Math.max(...data.map(d => d.online + d.retail), 1);
+      stackHost.replaceChildren(...data.map(d => {
+        const total = d.online + d.retail;
+        const dim = state.cross.dim === 'region' && state.cross.value !== d.region;
+        const active = state.cross.dim === 'region' && state.cross.value === d.region;
+        return el('button', { type: 'button', class: 'stack-row' + (dim ? ' is-dimmed' : '') + (active ? ' is-active' : ''), onclick: () => toggleCross('region', d.region) },
+          el('span', { class: 'lab-region' }, d.region),
+          el('span', { class: 'stack-track' }, el('span', { class: 'stack-seg', style: { width: (max ? d.online / max * 100 : 0) + '%', background: 'var(--accent)' } }), el('span', { class: 'stack-seg', style: { width: (max ? d.retail / max * 100 : 0) + '%', background: 'var(--teal)' } })),
+          el('span', {}, fmtCr(total)));
+      }));
+    }
+
+    // ---------------- scatter (margin vs revenue by category) ----------------
+    function renderScatter() {
+      const rows = scoped([]);
+      const data = catNames.filter(c => state.categories.has(c)).map(cat => {
+        const rr = rows.filter(r => r.category === cat);
+        const revenue = sumBy(rr, 'revenue'), profit = sumBy(rr, 'profit'), units = sumBy(rr, 'units');
+        return { name: cat, x: revenue ? profit / revenue : 0, y: revenue, r: units };
+      }).filter(d => d.y > 0);
+      if (!data.length) { scatterHost.innerHTML = ''; scatterNote.textContent = 'No data for the current selection.'; return; }
+      const W = Math.max(280, Math.round(scatterHost.clientWidth || 640)), H = 260, L = 48, R2 = 16, T = 16, B = 36;
+      const xs = data.map(d => d.x), ys = data.map(d => d.y);
+      const xMin = Math.max(0, Math.min(...xs) - 0.04), xMax = Math.max(...xs) + 0.04;
+      const yMax = Math.max(...ys) * 1.15 || 1;
+      const rMax = Math.max(...data.map(d => d.r), 1);
+      const x = v => L + (W - L - R2) * (v - xMin) / ((xMax - xMin) || 1), y = v => T + (H - T - B) * (1 - v / yMax);
+      const rScale = v => 9 + 22 * Math.sqrt(v / rMax);
+      let grid = '';
+      for (let i = 0; i <= 3; i++) { const gy = yMax * i / 3; grid += `<line class="grid-line" x1="${L}" x2="${W - R2}" y1="${y(gy).toFixed(1)}" y2="${y(gy).toFixed(1)}"/><text class="axis-text" x="${L - 6}" y="${(y(gy) + 4).toFixed(1)}" text-anchor="end">${Math.round(gy)}</text>`; }
+      for (let i = 0; i <= 4; i++) { const gx = xMin + (xMax - xMin) * i / 4; grid += `<line class="grid-line" x1="${x(gx).toFixed(1)}" x2="${x(gx).toFixed(1)}" y1="${T}" y2="${H - B}"/><text class="axis-text" x="${x(gx).toFixed(1)}" y="${H - B + 16}" text-anchor="middle">${(gx * 100).toFixed(0)}%</text>`; }
+      const bubbles = data.map(d => {
+        return `<circle cx="${x(d.x).toFixed(1)}" cy="${y(d.y).toFixed(1)}" r="${rScale(d.r).toFixed(1)}" fill="${BI_CAT_COLORS[d.name]}" opacity="0.85" data-name="${d.name}"><title>${d.name}: margin ${fmtPct(d.x)}, ${fmtCr(d.y)}, ${d.r.toLocaleString('en-IN')} units</title></circle>`;
+      }).join('');
+      scatterHost.innerHTML = `<svg class="line scatter" viewBox="0 0 ${W} ${H}" aria-hidden="true">${grid}${bubbles}</svg>`;
+      scatterHost.querySelectorAll('circle').forEach(c => c.addEventListener('click', () => drillInto(c.dataset.name)));
+      scatterNote.textContent = 'X axis: profit margin. Y axis: revenue (₹ lakh).';
+    }
+
+    function render() {
+      renderSlicers(); renderCrossBanner(); renderKPIs(); renderTrend(); renderCategoryBar(); renderDonut(); renderTopSub(); renderHeatmap(); renderStack(); renderScatter();
+    }
+    render();
+    let lastTrendW = trendPanel.clientWidth, lastScatterW = scatterHost.clientWidth;
+    new ResizeObserver(() => {
+      if (Math.abs(trendPanel.clientWidth - lastTrendW) > 8) { lastTrendW = trendPanel.clientWidth; renderTrend(); }
+      if (Math.abs(scatterHost.clientWidth - lastScatterW) > 8) { lastScatterW = scatterHost.clientWidth; renderScatter(); }
+    }).observe(host);
+  }
+
+  const DEMOS = { bi: mountBIDashboard, sales: mountSalesDashboard, cleaning: mountDataCleaningCaseStudy, ratios: mountRatioAnalyzer, network: mountNetworkDashboard, churn: mountChurnDashboard, funds: mountFundsComparison, forecast: mountForecastDashboard, prompting: mountPromptingProject, excel: mountExcelProject };
 
   /** Renders the project list. The first project starts open; demos are built the first time a project is opened. */
   function renderProjects() {
